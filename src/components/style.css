@@ -1,0 +1,40 @@
+.form-fields{
+    background-color: aliceblue;
+}
+.gender-font{
+    font-size:4em;
+}
+.gender-position{
+    margin-top: -1em;
+    margin-left: 5em;
+}
+
+
+.gender-color{
+    margin-top: -1em;
+    margin-left: 5em;
+   color:yellow;
+}
+.gender-base{
+   color:black;
+}
+
+.drop-down{
+  border-radius: 10px;
+  height: 2.5em;
+  /* border-color: #FBBB32; */
+  text-indent: 5em;
+  width: 15em;
+}
+
+
+@media all and (min-width: 480px) {
+    .Login {
+      padding: 60px 0;
+    }
+  
+    .Login form {
+      margin: 0 auto;
+      max-width: 320px;
+    }
+  }
