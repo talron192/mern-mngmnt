@@ -24,12 +24,12 @@ class App extends Component {
         <Router>
           <div className="container"  >
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
-              <Link to="/loginDetails" className="navbar-brand">
+              <Link to="/" className="navbar-brand">
                 ניהול לקוחות
               </Link>
               <ul  className="navbar-nav mr-auto" >
                 <li  className="navbar-item">
-                  <Link to="/get" className="nav-link">רשימת לקוחות</Link>
+                  <Link to="/get" className="nav-link">רשימת לקוaחות</Link>
                 </li>
                 <li className="navbar-item">
                   <Link to="/create" className="nav-link">הוספת לקוח</Link>
