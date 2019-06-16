@@ -13,8 +13,8 @@ var url = 'mongodb://talRon192:talro1992!@ds337507-a0.mlab.com:37507,ds337507-a1
 // var url = 'mongodb+srv://talRon:talro1992@cluster0-qpd3p.mongodb.net/customers';
 // var url = 'mongodb://127.0.0.1:27017/customers';
 
-console.log('port============',process.env.PORT);
-const port = process.env.PORT || PORT;
+console.log('port============',process.env.MONGODB_URI);
+const port = process.env.MONGODB_URI || PORT;
 
 
 let Customer = require('./customer.model');
