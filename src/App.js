@@ -29,7 +29,7 @@ class App extends Component {
               </Link>
               <ul  className="navbar-nav mr-auto" >
                 <li  className="navbar-item">
-                  <Link to="/get" className="nav-link">רשימת לקוaחות</Link>
+                  <Link to="/get" className="nav-link">רשימת לקוחות</Link>
                 </li>
                 <li className="navbar-item">
                   <Link to="/create" className="nav-link">הוספת לקוח</Link>
