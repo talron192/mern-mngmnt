@@ -223,7 +223,7 @@ export default class CreateTodo extends Component {
                     <div className="col-md-6">
                         <button className="btn btn-success"
                             onClick={this.handleSubmit.bind(this)} >
-                            <Link style={{ color: 'black' }} to={"/edit/" + this.state._id}>שמור והמשך</Link>
+                            <Link style={{ color: 'black' }} to={"/docs/" + this.state._id}>שמור והמשך</Link>
                         </button>
                     </div>
 
