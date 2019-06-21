@@ -10,6 +10,7 @@ const fs = require('fs');
 // var url = 'mongodb://talRon:talro1992@ds131737.mlab.com:31737/heroku_cfp0fh8k‏';
 // var url = 'mongodb+srv://talGlobalRon:talro1992!@cluster0-dklnq.mongodb.net/test?retryWrites=true&w=majority';
 var url = 'mongodb://talRon192:talro1992!@ds337507-a0.mlab.com:37507,ds337507-a1.mlab.com:37507/heroku_m6ndjfwk?replicaSet=rs-ds337507';
+// var url = 'mongo ds337507-a0.mlab.com:37507/heroku_m6ndjfwk -u talRon192 -p talro1992!';
 // var url = 'mongodb+srv://talRon:talro1992@cluster0-qpd3p.mongodb.net/customers';
 // var url = 'mongodb://127.0.0.1:27017/customers';
 
