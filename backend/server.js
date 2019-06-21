@@ -153,6 +153,7 @@ Routes.route( '/files-list').post(function (req,res){
 /*upload files */
 
 app.use('/customers', Routes);
+app.use('https://peaceful-mesa-16202.herokuapp.com', Routes);
 
 
 app.listen(port, function () {
