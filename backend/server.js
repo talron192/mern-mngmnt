@@ -14,7 +14,7 @@ var url = 'mongodb+srv://talGlobalRon:talro1992!@cluster0-dklnq.mongodb.net/test
 // var url = 'mongodb+srv://talRon:talro1992@cluster0-qpd3p.mongodb.net/customers';
 // var url = 'mongodb://127.0.0.1:27017/customers';
 
-console.log('port============',process.env.MONGODB_URI);
+console.log('port============', process.env.MONGODB_URI);
 const port = process.env.MONGODB_URI || PORT;
 
 
@@ -130,8 +130,8 @@ Routes.route('/loginDetails').get(function (req, res) {
 
 Routes.route('/add').post(function (req, res) {
     console.log('route-add');
-    console.log(req.body);
     let customer = new Customer(req.body);
+    console.log('customer', customer);
     fs.mkdirSync(`public/uploads/${customer._id}`);
 
     let address = req.body.address;
@@ -144,13 +144,33 @@ Routes.route('/add').post(function (req, res) {
         });
 });
 
-Routes.route( '/files-list').post(function (req,res){
-    let files= fs.readFileSync('756756867754');
+Routes.route('/files-list').post(function (req, res) {
+    let files = fs.readFileSync('756756867754');
 
-    console.log('files',files);
+    console.log('files', files);
 })
 
 /*upload files */
+
+/* get list of files */
+
+// Routes.route('/getListFiles/:id').get(function (req, res) {
+//     let path = 'public/uploads/' + req.body.cid;
+//     // let files= fs.readFileSync('public/uploads/756756867754');
+
+//     Customer.findById(id, function (err, customer) {
+//         if (err) {
+//             console.log("error:", err);
+//         } else {
+//             res.json(customer);
+
+//         }
+//     });
+// });
+
+
+
+/* get list of files */
 
 app.use('/customers', Routes);
 // app.use('https://peaceful-mesa-16202.herokuapp.com', Routes);

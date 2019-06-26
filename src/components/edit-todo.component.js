@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import listReactFiles from 'list-react-files'
+
 
 const Customer = props => (
     console.log(props),
@@ -34,13 +36,17 @@ export default class EditTodo extends Component {
         axios.get("http://localhost:4000/customers/getId/" + this.props.match.params.id, { id: this.props.match.params.id })
             .then(res => { // then print response status
                 this.setState({ obj: res.data });
+                listReactFiles(this.state.obj.pathFolder).then(files => console.log(files))
+
             }).then(
                 this.success = true,
-                console.log('componentDidMount', this.success)
+                
             )
             .catch(err => {
                 console.log(err);
             });
+            
+
     }
 
     customerData() {
@@ -53,7 +59,7 @@ export default class EditTodo extends Component {
                     <div className="row">
                         <div className="col-md-12">
                             <h3><b></b>כרטיס לקוח של : {this.state.obj.fullName}</h3>
-                            <span style={{float:"left"}}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים <i class="fa fa-upload" aria-hidden="true"></i></Link> </span>
+                            <span style={{ float: "left" }}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים <i class="fa fa-upload" aria-hidden="true"></i></Link> </span>
                         </div>
                     </div>
                     <hr></hr>
