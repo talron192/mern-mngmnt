@@ -11,10 +11,16 @@ let Customer= new Shema({
     gender:{
         type:String
     },
+    customer_id:{
+        type:Number
+    } ,
     _id:{
         type:Number
     } ,
     date:{
+        type:String
+    }, 
+    age:{
         type:String
     }, 
     issueDate:{
@@ -41,6 +47,11 @@ let Customer= new Shema({
     address:{
         type:{},
         ref:'address'
+        
+    },
+    event:{
+        type:[],
+        ref:'event'
         
     },
     pathFolder:{

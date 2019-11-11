@@ -1,0 +1,114 @@
+<html>
+	<head>
+		<title>test</title>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<div class="container">
+			<h2>Welcome to Enoya-one LTD developer test.</h2>
+			<ul>
+				<li>
+					Thank you for accepting the option to participate in this test</li>
+				<li>
+					This is a simple HTML with a table and a form, Your task is to transform this HTML form to an interactive form which communicate with a json file. we urge you to read the full task details and then decide how to do it and how to invest your time, remember you have 3 hours to complete.</li>
+				<li>You should do the following:
+					<ul>
+						<li>Download the following file <a href="http://general.aerocrs.systems/devtest/data.json">http://general.aerocrs.systems/devtest/data.json</a> and place it in your project's folder.</li>
+						<li>This file contains records.</li>
+						<li>Pull the records from the json file, and replace the static html table below with the records from the file.</li>
+						<li>The form should be able to add new records to the file and present it in the table below.</li>
+						<li>
+							Activate the <span class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove" style="cursor:pointer"></span> icon which will delete the record from the file.
+						</li>
+						<li>
+							Sort the table by the birth date.
+						</li>
+						<li>
+							Update data of a row using update <span class="glyphicon glyphicon-pencil	" aria-hidden="true" title="Update" style="cursor:pointer"></span> icon (Clicking the icon should show the record in the form and "Submit" would update it).
+						</li>
+						<li>	
+							With every write to the json file, you need to send the inserted data to http://general.aerocrs.systems/devtest/curl.php as <b>POST</b> using CURL.<br/>
+							Example for POST information to be sent to the URL: <i>email=jonathan@aerocrs.com&firstname=Jonathan&lastname=Rose</i> <br>
+							(you will get a OK/BAD response from the CURL, no need to verify it.).
+						</li>
+						<li>The layout of the page, css, date-formats etc. should not be changed</li>
+						<li>The code should be written in PHP, keep it as simple as possible</li>
+						<li>PHP 5.6 and above should be used</li>
+						<li>In the HTML source of this file, there is a syntax error, fix it.</li>						
+					</ul>
+				</li>
+				<li>
+					You should complete the test within 2 hours.
+				</li>
+				<li>
+					Once you have completed the test, please send it using <a href="https://wetransfer.com/" target="_blank">wetransfer</a> (as e-mail systems might block php and js files) to steven@aerocrs.com.
+				</li>		
+			</ul>
+			<br/>
+		
+			
+			<div class="row">
+				<div class="col-md-4">
+					<form method="post" action="">
+						<div class="form-group">
+							<label for="Email">Email address</label>
+							<input type="email" class="form-control" id="Email" placeholder="Email">
+						</div>
+						<div class="form-group">
+							<label for="Firstname">First Name</label>
+							<input type="text" class="form-control" id="Firstname" placeholder="Firstname">
+						</div>
+						<div class="form-group">
+							<label for="Lastname">Last Name</label>
+							<input type="text" class="form-control" id="Lastname" placeholder="Lastname">
+						</div>
+						<div class="form-group">
+							<label for="BirthDate">Birth Date</label>
+							<input type="date" class="form-control" id="BirthDate" placeholder="BirthDate">
+						</div>
+						<button type="submit" class="btn btn-default">Submit</button>
+					</form>
+				</div>
+				<div class="col-md-8">
+					<table border="1" class="table table-striped">
+						<tr>
+							<th>E-mail</td>
+							<th>First name</td>
+							<th>Last name</td>
+							<th>Birth date</td>
+						</tr>
+						<tr>
+							<td>jonathan@aerocrs.com</td>
+							<td>Jonathan</td>
+							<td>Rose</td>
+							<td>19/05/1968</td>
+							<td>
+								<span class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove" style="cursor:pointer"></span>&nbsp;
+								<span class="glyphicon glyphicon-pencil	" aria-hidden="true" title="Update" style="cursor:pointer"></span>
+							</td>
+						</tr>
+						<tr>
+							<td>john@aerocrs.com</td>
+							<td>John</td>
+							<td>Bayard</td>
+							<td>18/05/1980</td>
+							<td>
+								<span class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove" style="cursor:pointer"></span>&nbsp;
+								<span class="glyphicon glyphicon-pencil	" aria-hidden="true" title="Update" style="cursor:pointer"></span>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			
+		</div>	
+			
+	</body>
+</html>

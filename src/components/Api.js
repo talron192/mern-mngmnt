@@ -1,21 +1,43 @@
-import React from 'react';
-
-import axios from 'axios';
+import axios from '../../node_modules/axios';
 
 export class Api {
 
     GetCustomersData() {
         return axios.get('http://localhost:4000/customers/get')
             .then(function (res) {
-                console.log('getData', res.data);
                 return res.data;
 
             }).catch(function (error) {
-                console.log('error Api', error)
                 return [] // Return empty array in case error response.
             });
     }
 
+    GetEventType() {
+        let arr = [
+            {
+                key: 1,
+                value: "שיחת טלפון"
+            },
+            {
+                key: 2,
+                value: "פגישה"
+            }
+        ]
+        return arr;
+    }
+    GetPaidType() {
+        let arr = [
+            {
+                key: 1,
+                value: "תעריף שעתי"
+            },
+            {
+                key: 2,
+                value: "תשלום קבוע"
+            }
+        ]
+        return arr;
+    }
     GetTypeAction() {
         let arr = [
             {
@@ -46,6 +68,14 @@ export class Api {
             },
             {
                 key:2,
+                value:"גרוש"
+            },
+            {
+                key:3,
+                value:"אלמן"
+            },
+            {
+                key:4,
                 value:"נשוי"
             }
         ]
@@ -66,6 +96,10 @@ export class Api {
             {
                 key:3,
                 value:"לימודים"
+            },
+            {
+                key:4,
+                value:"אחר"
             }
         ]
 
