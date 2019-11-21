@@ -30,7 +30,10 @@ export default class PowerAttorney extends Component {
             msgEvent: '',
             showReciept: false,
             RecieptModalToShow: false,
-            RecieptContent: ''
+            showMailDetails: false,
+            RecieptContent: '',
+            subject:'',
+            emailContent:''
 
         }
     }
@@ -39,7 +42,7 @@ export default class PowerAttorney extends Component {
         const handleDismiss = () => this.setState({ showReciept: false });
 
         return (
-            <div>
+            <div style={{ width: '28em' }}>
                 <div className="container">
                     <h3 style={{ textAlign: "center" }}>הפקת ייפוי כח</h3>
                     <hr></hr>
@@ -48,14 +51,39 @@ export default class PowerAttorney extends Component {
                             <button className="btn btn-secondary" onClick={this.onClickHandler}>הפק ייפוי כח</button>
                         </div>
                         <div className="col-md-4">
-                            <button className="btn btn-secondary" onClick={this.sendToEmail.bind(this)}>שליחה למייל</button>
+                            <button className="btn btn-secondary" onClick={this.showEmailDetails.bind(this)}>שליחה למייל</button>
                         </div>
                         <div className="col-md-4">
                             <button className="btn btn-secondary" onClick={this.previewReceipt.bind(this)}>הצגת קבלה</button>
                         </div>
                     </div>
+                    {this.state.showMailDetails ?
+                        <div>
+                            <div className="row">
+
+                                <div className="col-md-12" style={{ paddingTop: '1em' }}>
+                                    <input  type="text" onChange={this.handleChange.bind(this)} style={{ border: '0', borderBottom: '1px solid grey' }} className="form-control" placeholder="נושא" aria-label="Example text with button addon" aria-describedby="button-addon1" id="subject"></input>
+
+                                </div>
+                            </div>
+                            <div className="row">
+
+                                <div className="col-md-12" >
+
+                                    <div className="input-group mb-3" style={{ paddingTop: '2em' }} >
+                                        <div className="input-group-prepend" >
+                                            <button className="btn btn-outline-secondary" type="button" onClick={this.sendToEmail.bind(this)}>שלח</button>
+                                        </div>
+                                        <input id="emailContent"  type="text" className="form-control" onChange={this.handleChange.bind(this)} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" ></input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        : ''}
+
+
                 </div>
-                <div>
+                <div >
                     <Modal isOpen={this.state.RecieptModalToShow} id="ReceiptModal"
                         onRequestClose={this.closePreviewReceipt}>
                         <ModalHeader onClick={this.closePreviewReceipt}  >
@@ -76,10 +104,21 @@ export default class PowerAttorney extends Component {
         });
     }
 
-    sendToEmail = () => {
-        const emailData = { email: this.props.state.obj.email }
-        axios.post('http://localhost:4000/customers/sendEmail/' + this.state._id, emailData)
+    showEmailDetails =()=>{
+
+        this.setState({showMailDetails:true});
     }
+
+    sendToEmail = () => {
+        const emailData = {templateName: 'PowerAttorney', email: this.props.state.obj.email,subject:this.state.subject,content:this.state.emailContent }
+        console.log(emailData);
+        axios.post('http://localhost:4000/customers/sendEmail/' + this.state._id, emailData).then(
+            (res)=>{
+                console.log(res);
+            }
+        )
+    }
+
     closePreviewReceipt = e => {
         this.setState({
             RecieptModalToShow: false,
@@ -96,7 +135,7 @@ export default class PowerAttorney extends Component {
             priceAfterDiscount: this.state.priceAfterDiscount,
             eventID: Math.random(),
             _id: this.state._id,
-            templateName:'PowerAttorney'
+            templateName: 'PowerAttorney'
 
         };
         axios.post('http://localhost:4000/customers/addTemplateFile/' + this.state._id, newReceipt)

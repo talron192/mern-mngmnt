@@ -65,7 +65,6 @@ Routes.route('/upload/').post(function (req, res) {
 });
 
 Routes.route('/sendEmail/:id').post(function (req, res) {
-    console.log('email===', req.body.email);
     // service =req.body.email.split('@')[1].split('.')[0]; 
     // console.log('service1',service1);
 
@@ -76,20 +75,26 @@ Routes.route('/sendEmail/:id').post(function (req, res) {
             pass: 'talro1992'
         }
     });
-
     var mailOptions = {
         from: 'talglobalron@gmail.com',
         to: req.body.email,
-        subject: 'Tal ron test',
-        text: 'צחי יגברררררררר!'
-    };
+        subject: req.body.subject,
+        text: req.body.content,
+        attachments: [
+            {   // file on disk as an attachment
+                filename: req.body.templateName+'.pdf',
+                path:`../public/uploads/${req.params.id}/${req.body.templateName}.pdf`
 
+            },
+        ]
+    };
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log('$%$%$error');
             console.log(error);
         } else {
             console.log('Email sent: ' + info.response);
+            res.json('ייפוי הכח נשלח בהצלחה ללקוח');
         }
     });
 })
@@ -313,7 +318,6 @@ Routes.route('/addEvent/:id').post(function (req, res) {
 
 Routes.route('/addTemplateFile/:id').post(function (req, res) {
     var id = req.body._id;
-    console.log(req.body.templateName);
     var templateName = req.body.templateName;
     var fileToPdf;
     Customer.findById(id, function (err, customer) {
@@ -330,8 +334,12 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
             //  fs.writeFile(path+`/${templateName}.html`,content_recieptFile,(err,res_)=>{
             //     console.log('done');
             //  });
+            var options = {
+                format: 'A4',
+                base: path + `/${templateName}.html`
+            };
             fs.readFile(path + `/${templateName}.html`, (err, file) => {
-                pdf.create(fileToPdf, {}).toFile(`../public/uploads/${id}/${templateName}.pdf`,
+                pdf.create(fileToPdf, options).toFile(`../public/uploads/${id}/${templateName}.pdf`,
                     (err) => {
                         if (err) return console.log('error', err);
                     })

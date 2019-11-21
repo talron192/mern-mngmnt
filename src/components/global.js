@@ -1,11 +1,13 @@
+import React from 'react'
+import { withGlobalState } from 'react-globally'
 
-// import React, { Component } from "react";
+const Global = ({ globalState }) => {
+  return (
+      console.log(globalState.test)
+    // <div>
+    //   The counter value: {globalState.test}
+    // </div>
+  )
+}
 
-// export  class Global   {
-//     constructor(props) {
-//         super(props);
-//         this.state ={
-//             test:'12345' 
-//         }
-//     }
-// }
+export default withGlobalState(Global)

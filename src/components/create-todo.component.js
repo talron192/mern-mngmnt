@@ -68,7 +68,7 @@ export default class CreateTodo extends Component {
         let birthYear = parseInt(birthday.split("-")[0]);
         var d = new Date();
         var cuurentYear = d.getFullYear();
-        let age = cuurentYear-birthYear;
+        let age = cuurentYear - birthYear;
 
         return age.toString();
     }
@@ -98,7 +98,7 @@ export default class CreateTodo extends Component {
     }
 
     handleSubmit = (e) => {
-        if (this.state._id == '' || this.state.actionType == '') {
+        if (this.state._id == '' || this.state.actionType == '' || this.state.email == '') {
             this.setState({
                 toNextStep: false,
                 changeStyle: true
@@ -117,7 +117,7 @@ export default class CreateTodo extends Component {
             customer_id: this.state.list.length + 1,
             _id: this.state._id,
             date: this.state.date,
-            age:this.getCalculationAge(this.state.date),
+            age: this.getCalculationAge(this.state.date),
             issueDate: this.state.issueDate,
             houseNumber: this.state.houseNumber,
             phoneNumber: this.state.phoneNumber,
@@ -156,16 +156,16 @@ export default class CreateTodo extends Component {
     }
     render() {
         var grid = (
-            <div className="container">
+            <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-4">
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="text" id="fullName"
                             onChange={this.handleChange.bind(this)} placeholder="שם מלא"></input>
                     </div>
                     <div className="col-md-4">
-                        <input className="form-control" style={this.state.changeStyle == false ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="number" onChange={this.handleChange.bind(this)}
+                        <input className="form-control" style={this.state.changeStyle == false && this.state._id == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="number" onChange={this.handleChange.bind(this)}
                             id="_id" placeholder="ת.ז"></input>
-                        {this.state.changeStyle == true ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
+                        {this.state.changeStyle == true && this.state._id == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
                     </div>
                     <div className="col-md-4">
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="date" onChange={this.handleChange.bind(this)}
@@ -175,8 +175,10 @@ export default class CreateTodo extends Component {
                 <hr></hr>
                 <div className="row">
                     <div className="col-md-4">
-                        <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="text" onChange={this.handleChange.bind(this)}
+                        <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }}  style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="text" onChange={this.handleChange.bind(this)}
                             id="email" placeholder="אימייל"></input>
+                        {this.state.changeStyle == true && this.state.email == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
+
                     </div>
                     <div className="col-md-4">
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="date" onChange={this.handleChange.bind(this)}
@@ -244,11 +246,11 @@ export default class CreateTodo extends Component {
                 <hr></hr>
                 <div className="row">
                     <div className="col=md-4" style={{ marginRight: "1em" }}>
-                        <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} id="actionType" onChange={this.handleChange.bind(this)} className="drop-down">
+                        <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} id="actionType" onChange={this.handleChange.bind(this)} className="drop-down">
                             <option style={{ backgroundColor: "lightgrey" }}>סוג פעילות</option>
-                            {ActionType.GetTypeAction().map((action) => <option key={action.key} value={action.key+'-'+action.value}>{action.value}</option>)}
+                            {ActionType.GetTypeAction().map((action) => <option key={action.key} value={action.key + '-' + action.value}>{action.value}</option>)}
                         </select>
-                        {this.state.changeStyle == true ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
+                        {this.state.changeStyle == true && this.state.actionType == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
 
                     </div>
                     <div className="col=md-4" style={{ marginRight: "1em" }}>
@@ -266,7 +268,7 @@ export default class CreateTodo extends Component {
 
                 <div className="row">
                     <div className="col-md-6">
-                        <button className="btn btn-secondary" style={{ borderRadius:'1em',borderColor:'#f7b742',backgroundColor:'#f7b742','width': '10em', 'fontWeight': 'bold' }}
+                        <button className="btn btn-secondary" style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }}
                             onClick={this.handleSubmit.bind(this)} >
                             <Link style={{ color: 'black', textDecoration: 'none' }} to={this.state.toNextStep == true ? "/docs/" + this.state._id : "/create/"}>שמור והמשך</Link>
                         </button>
@@ -278,10 +280,10 @@ export default class CreateTodo extends Component {
 
 
         return (
-            <div className="App" style={{ direction: "rtl" }}>
+            <div className="App" style={{ direction: "rtl", width: '80%', marginRight: '19em' }}>
                 <header className="App-header">
-                    <h1 style={{ textAlign: 'center' }}><b>רישום לקוח</b></h1>
-                    <div className="form-fields" style={{paddingTop: '2em'}} >
+                    <h3 style={{ textAlign: 'initial' }}>רישום לקוח</h3>
+                    <div className="form-fields" style={{ paddingTop: '2em' }} >
                         {grid}
                     </div>
                 </header>

@@ -43,7 +43,7 @@ export default class SignUp extends Component {
             <div >
 
                 <div className="card-header" style={{ marginTop: '10em'}}>
-                    <h3 style={{ textAlign: 'center',color:'white' }}><strong>רישום למערכת</strong></h3>
+                    <h3 style={{ textAlign: 'center' }}><strong>רישום למערכת</strong></h3>
                         <br></br>
                         <div className="input-group form-group">
                             <div className="input-group-prepend" style={{ width: '60%',marginRight:'12em' }}>

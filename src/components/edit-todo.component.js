@@ -1,7 +1,8 @@
 import React, { Component } from '../../node_modules/react';
 import axios from '../../node_modules/axios';
-import { Link } from '../../node_modules/react-router-dom';
+import { Link, Router, Route, withRouter,Switch } from '../../node_modules/react-router-dom';
 import Modal from '../../node_modules/react-modal';
+import DocsUpload from "./docs-upload.component";
 import AppointmentModal from './AppointmentModal';
 import ProductionReceipt from './ProductionReceipt';
 import PowerAttorney from './PowerAttorney';
@@ -497,141 +498,143 @@ export default class EditTodo extends Component {
 
         if (this.success == true) {
             return (
-                <div style={{ boxShadow: '-1px 2px 4px 2px #ccc' }}>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <h3><b></b>כרטיס לקוח של : {this.state.obj.fullName}</h3>
-                            <span style={{ float: "left" }}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים  </Link><i className="fa fa-upload" aria-hidden="true"></i> </span>
+                <div className="container-fluid">
+                    <div style={{ boxShadow: '-1px 2px 4px 2px #ccc' }}>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <h3><b></b>כרטיס לקוח של : {this.state.obj.fullName}</h3>
+                                <span style={{ float: "left" }}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים  </Link><i className="fa fa-upload" aria-hidden="true"></i> </span>
+                            </div>
                         </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <label>שם הלקוח: <b>{this.state.obj.fullName}</b></label>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <label>שם הלקוח: <b>{this.state.obj.fullName}</b></label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>תעודת זהות: <b>{this.state.obj._id}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>תאריך הנפקת ת.ז: <b>{this.convertDate(this.state.obj.issueDate)}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>תאריך לידה: <b>{this.convertDate(this.state.obj.date)}</b> </label>
+                            </div>
                         </div>
-                        <div className="col-md-3">
-                            <label>תעודת זהות: <b>{this.state.obj._id}</b> </label>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <label>טלפון בית: <b>{this.state.obj.houseNumber}</b></label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>טלפון נייד: <b>{this.state.obj.phoneNumber}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>פקס: <b>{this.state.obj.fax}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>אימייל: <b>{this.state.obj.email}</b> </label>
+                            </div>
                         </div>
-                        <div className="col-md-3">
-                            <label>תאריך הנפקת ת.ז: <b>{this.convertDate(this.state.obj.issueDate)}</b> </label>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <label> רחוב: <b>{this.state.obj.address.houseAddress ? this.state.obj.address.houseAddress : ''}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label> עיר: <b>{this.state.obj.address.city}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>מיקוד: <b>{this.state.obj.address.postalCode}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>ת.ד: <b>{this.state.obj.address.poBox}</b> </label>
+                            </div>
                         </div>
-                        <div className="col-md-3">
-                            <label>תאריך לידה: <b>{this.convertDate(this.state.obj.date)}</b> </label>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <label> סוג פעילות: <b>{this.state.obj.actionType.split("-")[1]}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label> מצב משפחתי: <b>{this.state.obj.matiralStatus}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>מקור הגעה: <b>{this.state.obj.sourceArrival}</b> </label>
+                            </div>
+                            <div className="col-md-3">
+                                <label>גיל: <b>{this.state.obj.age}</b> </label>
+                            </div>
                         </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <label>טלפון בית: <b>{this.state.obj.houseNumber}</b></label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>טלפון נייד: <b>{this.state.obj.phoneNumber}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>פקס: <b>{this.state.obj.fax}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>אימייל: <b>{this.state.obj.email}</b> </label>
-                        </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <label> רחוב: <b>{this.state.obj.address.houseAddress ? this.state.obj.address.houseAddress : ''}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label> עיר: <b>{this.state.obj.address.city}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>מיקוד: <b>{this.state.obj.address.postalCode}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>ת.ד: <b>{this.state.obj.address.poBox}</b> </label>
-                        </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <label> סוג פעילות: <b>{this.state.obj.actionType.split("-")[1]}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label> מצב משפחתי: <b>{this.state.obj.matiralStatus}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>מקור הגעה: <b>{this.state.obj.sourceArrival}</b> </label>
-                        </div>
-                        <div className="col-md-3">
-                            <label>גיל: <b>{this.state.obj.age}</b> </label>
-                        </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <button style={{borderRadius:'1em',borderColor:'#f7b742',backgroundColor:'#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
-                                onClick={this.openModal}>
-                                אירוע חדש
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <button style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
+                                    onClick={this.openModal}>
+                                    אירוע חדש
                             </button>
-                        </div>
-                        <div className="col-md-3">
-                            <button style={{borderRadius:'1em',borderColor:'#f7b742',backgroundColor:'#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
-                                onClick={this.openProductionReceipt}>
-                                הפקת קבלה
+                            </div>
+                            <div className="col-md-3">
+                                <button style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
+                                    onClick={this.openProductionReceipt}>
+                                    הפקת קבלה
                             </button>
-                        </div>
-                        <div className="col-md-3">
-                            <button style={{ borderRadius:'1em',borderColor:'#f7b742',backgroundColor:'#f7b742','width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
-                                onClick={this.openPowerAttorney}>
-                                הפקת ייפוי כח
+                            </div>
+                            <div className="col-md-3">
+                                <button style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
+                                    onClick={this.openPowerAttorney}>
+                                    הפקת ייפוי כח
                             </button>
+                            </div>
+
                         </div>
 
-                    </div>
-
-                    <Modal onRequestClose={this.closeModal}
-                        style={customStyles}
-                        isOpen={this.state.modalIsOpen}
-                        onAfterOpen={this.afterOpenModal}>
-                        <AppointmentModal id={this.state.obj._id}></AppointmentModal>
-                    </Modal>
-                    <Modal onRequestClose={this.closeProductionReceipt}
-                        style={customStyles}
-                        isOpen={this.state.prodReceiptModalIsOpen}>
-                        <ProductionReceipt state={this.state} id={this.state.obj._id}></ProductionReceipt>
-                    </Modal>
-                    <Modal onRequestClose={this.closePowerAttorney}
-                        style={customStyles}
-                        isOpen={this.state.PowerAttorneyIsOpen}>
-                        <PowerAttorney state={this.state} id={this.state.obj._id}></PowerAttorney>
-                    </Modal>
-                    <br></br>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <label onClick={this.showListFiles} style={{ float: "right", cursor: "pointer" }}> <b> הצגת קבצי לקוח  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
+                        <Modal onRequestClose={this.closeModal}
+                            style={customStyles}
+                            isOpen={this.state.modalIsOpen}
+                            onAfterOpen={this.afterOpenModal}>
+                            <AppointmentModal id={this.state.obj._id}></AppointmentModal>
+                        </Modal>
+                        <Modal onRequestClose={this.closeProductionReceipt}
+                            style={customStyles}
+                            isOpen={this.state.prodReceiptModalIsOpen}>
+                            <ProductionReceipt state={this.state} id={this.state.obj._id}></ProductionReceipt>
+                        </Modal>
+                        <Modal onRequestClose={this.closePowerAttorney}
+                            style={customStyles}
+                            isOpen={this.state.PowerAttorneyIsOpen}>
+                            <PowerAttorney state={this.state} id={this.state.obj._id}></PowerAttorney>
+                        </Modal>
+                        <br></br>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <label onClick={this.showListFiles} style={{ float: "right", cursor: "pointer" }}> <b> הצגת קבצי לקוח  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
+                            </div>
                         </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row" id="" style={this.state.showListFiles == false ? { display: "none" } : { display: "block" }}>
-                        <div className="col-md-12">
+                        <hr></hr>
+                        <div className="row" id="" style={this.state.showListFiles == false ? { display: "none" } : { display: "block" }}>
+                            <div className="col-md-12">
 
-                            {this.filesList()}
+                                {this.filesList()}
+                            </div>
                         </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
+                            </div>
+
                         </div>
+                        <div className="row" id="" style={this.state.showComments == false ? { display: "none" } : { display: "block" }}>
+                            <div className="col-md-12">
 
-                    </div>
-                    <div className="row" id="" style={this.state.showComments == false ? { display: "none" } : { display: "block" }}>
-                        <div className="col-md-12">
+                                {this.commentsList()}
+                            </div>
 
-                            {this.commentsList()}
                         </div>
-
+                        <hr></hr>
                     </div>
-                    <hr></hr>
                 </div>
             );
         }
@@ -640,12 +643,18 @@ export default class EditTodo extends Component {
     render() {
 
         return (
-            <div style={{ direction: "rtl", textAlign: "center" }} className="form-fields">
-                {
-                    this.customerData()
-                }
-            </div>
+            <Switch>
+                <div style={{ direction: "rtl", textAlign: "center", width: '80%', marginRight: '18em' }} className="form-fields">
+                    {
+                        this.customerData()
+                    }
+                </div>
+                <Route path="/docs/:id" exact component={DocsUpload} />
+
+            </Switch>
         )
     }
 }
+
+// export default withRouter(Sidebar);
 

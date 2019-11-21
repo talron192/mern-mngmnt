@@ -2,6 +2,9 @@ import React from '../../node_modules/react';
 
 export default class ProdRecipet_template extends React.Component {
 
+    componentDidMount(){
+        console.log(this.props.prodReciept);
+    }
 
     render() {
         return (
@@ -85,11 +88,11 @@ export default class ProdRecipet_template extends React.Component {
                         <tr>
                             <td>prodReciept</td>
                             <td>{this.props.prodReciept.description}</td>
-                            <td>PerHour</td>
-                            <td>CountHours</td>
-                            <td>FixedPayment</td>
-                            <td>{this.props.prodReciept.discount}</td>
-                            <td>{this.props.prodReciept.priceAfterDiscount}</td>
+                            <td>{this.props.prodReciept.pricePerHour}</td>
+                            <td>{this.props.prodReciept.hourCount}</td>
+                            <td>{this.props.prodReciept.priceBeforeVAT ? this.props.prodReciept.priceBeforeVAT : '' }</td>
+                            <td>{this.props.prodReciept.discountHour ? this.props.prodReciept.discountHour : this.props.prodReciept.discount }</td>
+                            <td>{this.props.prodReciept.priceAfterDiscount !=='' ? this.props.prodReciept.priceAfterDiscount : this.props.prodReciept.totalPriceAfterDiscount }</td>
                         </tr>
                     </tbody>
                 </table>

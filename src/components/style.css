@@ -72,7 +72,8 @@
     color: white;
 }
 body{
-  background-color: rgba(149, 149, 149, 0.925);
+  background-color: #f4f3ef;
+  /* background-color: rgba(149, 149, 149, 0.925); */
 }
 
 .loginButtons{

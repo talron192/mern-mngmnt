@@ -1,9 +1,14 @@
 import React, { Component } from '../../node_modules/react';
 import axios from '../../node_modules/axios';
+import { withGlobalState } from 'react-globally'
 // import ImporterAPI from './Api';
-import { Link, Router } from '../../node_modules/react-router-dom';
+import { Link, Router,Route,withRouter,Switch } from '../../node_modules/react-router-dom';
 import ReactTable from "../../node_modules/react-table";
+import EditTodo from "./edit-todo.component";
+
+
 import "../../node_modules/react-table/react-table.css";
+
 
 export default class TodoList extends Component {
     constructor(props) {
@@ -11,20 +16,33 @@ export default class TodoList extends Component {
         this.state = {
             list: [],
             showDContent: true,
-            showList: true
+            showList: true,
+            routOutFromDashBord: false
 
         }
         this.dataContect = this.dataContect.bind(this);
     }
-    componentDidMount() {
-        console.log(this.props);
 
+    // componentDidUpdate (){
+    //     console.log('componentDidUpdate ');
+    //     if(this.state.showList == false){
+
+    //         this.setState({showList:true});
+    //     }
+    // }
+    componentDidMount() {
+        console.log('componentDidMount', this.props);
+        this.getCustomersData();
+    }
+
+    getCustomersData() {
         axios.get('http://localhost:4000/customers/get')
             .then(res => {
-                let list=[];
+                let list = [];
                 console.log(res.data);
-                res.data.map(e=>{
-                    if(e.actionType.split("-")[0]== this.props.authData.actionType){
+                res.data.map(e => {
+                    console.log(e);
+                    if (e.actionType && e.actionType.split("-")[0] == this.props.props.authData.actionType) {
                         list.push(e);
                     }
                 })
@@ -80,7 +98,7 @@ export default class TodoList extends Component {
                 Header: "פעולות",
                 Cell: props => {
                     return (
-                        <Link style={{ textDecoration: 'none', cursor: 'pointer',color: 'black' }} to={"/edit/" + props.original._id} onClick={() => this.setState({ showList: false })}> תיק לקוח</Link>
+                        <Link style={{ textDecoration: 'none', cursor: 'pointer', color: 'black' }} to={"/edit/" + props.original._id} onClick={() => this.setState({ showList: false })} > תיק לקוח</Link>
                     )
                 },
                 style: {
@@ -91,20 +109,21 @@ export default class TodoList extends Component {
             }
         ]
         return (
-            // <Router>
+            <Switch>
 
-            this.state.showList ?
-                <ReactTable
-                    columns={cols}
-                    data={this.state.list}
-                    filterable
-                    noDataText={"אין נתונים"}
-                    defaultPageSize={10}
-                >
-                </ReactTable> : ''
+                    <ReactTable
+                        columns={cols}
+                        data={this.state.list}
+                        filterable
+                        noDataText={"אין נתונים"}
+                        defaultPageSize={10}
+                        style={{ fontSize: '20px', width: '80%', marginRight: '15em' }}
+                    >
+                    </ReactTable>
+                <Route path="/edit/:id" exact component={EditTodo} />
 
-
-            // </Router>
+            </Switch>
         )
     }
 }
+// export default withGlobalState(TodoList)

@@ -30,7 +30,9 @@ export default class ProductionReceipt extends Component {
             msgEvent: '',
             showReciept: false,
             RecieptModalToShow: false,
-            RecieptContent: ''
+            RecieptContent: '',
+            totalPricePerHour: '',
+            totalPriceAfterDiscount: ''
 
         }
     }
@@ -57,15 +59,15 @@ export default class ProductionReceipt extends Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-md-3">
-                                <input className="form-control" type="number" onChange={this.handlePaymentDetails.bind(this)}
+                                <input className="form-control" type="number" onChange={this.handlePaymentPerHourDetails.bind(this)}
                                     id="hourCount" placeholder="שעות עבודה"></input>
                             </div>
                             <div className="col-md-4">
-                                <input className="form-control" type="number" onChange={this.handlePaymentDetails.bind(this)}
+                                <input className="form-control" type="number" onChange={this.handlePaymentPerHourDetails.bind(this)}
                                     id="pricePerHour" placeholder="מחיר שעת עבודה"></input>
                             </div>
                             <div className="col-md-4">
-                                <input className="form-control" type="number" id="discountHour" onChange={this.handlePaymentDetails.bind(this)}
+                                <input className="form-control" type="number" id="discountHour" onChange={this.handlePaymentPerHourDetails.bind(this)}
                                     placeholder="הנחה מסך הסכום ב-%"></input>
                             </div>
                         </div>
@@ -115,8 +117,8 @@ export default class ProductionReceipt extends Component {
                         }
                         {
                             this.state.showReciept == true ?
-                                <div className="row" style={{padding:'3em'}}> 
-                                <br></br>
+                                <div className="row" style={{ padding: '3em' }}>
+                                    <br></br>
                                     <div className="col-md-6" style={{ textAlign: 'center', textDecoration: 'none' }}> <button className="btn btn-secondary" onClick={this.sendToEmail.bind(this)}>שליחה למייל</button></div>
                                     <div className="col-md-6" style={{ textAlign: 'center', textDecoration: 'none' }}> <button className="btn btn-secondary" onClick={this.previewReceipt.bind(this)}>הצגת קבלה</button></div>
                                     <hr></hr>
@@ -146,9 +148,9 @@ export default class ProductionReceipt extends Component {
         });
     }
 
-    sendToEmail = ()=>{
-        const emailData ={email : this.props.state.obj.email}
-        axios.post('http://localhost:4000/customers/sendEmail/' + this.state._id,emailData)
+    sendToEmail = () => {
+        const emailData = { email: this.props.state.obj.email }
+        axios.post('http://localhost:4000/customers/sendEmail/' + this.state._id, emailData)
     }
     closePreviewReceipt = e => {
         this.setState({
@@ -158,28 +160,49 @@ export default class ProductionReceipt extends Component {
     }
 
     onClickHandler = () => {
-        const newReceipt = {
-            priceBeforeVAT: this.state.priceBeforeVAT,
-            description: this.state.description,
-            discount: this.state.discount,
-            paidType: this.state.paidType,
-            priceAfterDiscount: this.state.priceAfterDiscount,
-            eventID: Math.random(),
-            _id: this.state._id,
-            templateName:'ProdRecipet'
-        };
-        // console.log('newReceipt', newReceipt);
-        // axios.post('http://localhost:4000/customers/addReceipt/' + this.state._id, newReceipt)
-        axios.post('http://localhost:4000/customers/addTemplateFile/' + this.state._id, newReceipt)
-            .then(res => {
-                this.setState({
-                    msgEvent: res.data,
-                    showReciept: true,
-                })
+
+        if (this.state.pricePerHour && this.state.hourCount) {
+            let pricePerHour = document.getElementById('pricePerHour').value;
+            let hourCount = document.getElementById('hourCount').value;
+            this.setState({ totalPricePerHour: pricePerHour * hourCount });
+            setTimeout(()=>{
+                if (this.state.discountHour) {
+                    this.setState({ totalPriceAfterDiscount: this.state.totalPricePerHour - (this.state.totalPricePerHour * (this.state.discountHour / 100)) })
+                }
             })
-            .catch(err => {
-                console.log(err);
-            });
+        }
+            setTimeout(() => {
+
+                const newReceipt = {
+                    totalPricePerHour: this.state.totalPricePerHour,
+                    totalPriceAfterDiscount:this.state.totalPriceAfterDiscount,
+                    priceBeforeVAT: this.state.priceBeforeVAT,
+                    description: this.state.description,
+                    discount: this.state.discount,
+                    paidType: this.state.paidType,
+                    priceAfterDiscount: this.state.priceAfterDiscount,
+                    hourCount: this.state.hourCount,
+                    pricePerHour: this.state.pricePerHour,
+                    discountHour: this.state.discountHour,
+                    eventID: Math.random(),
+                    _id: this.state._id,
+                    templateName: 'ProdRecipet'
+                };
+                console.log('newReceipt', newReceipt);
+                // axios.post('http://localhost:4000/customers/addReceipt/' + this.state._id, newReceipt)
+                axios.post('http://localhost:4000/customers/addTemplateFile/' + this.state._id, newReceipt)
+                    .then(res => {
+                        this.setState({
+                            msgEvent: res.data,
+                            showReciept: true,
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            })
+        
+
     }
 
     handleChange = (e) => {
@@ -187,20 +210,41 @@ export default class ProductionReceipt extends Component {
             [e.target.id]: e.target.value
         });
     }
-    handleTypeChange = (e) => {
 
+    handlePaymentPerHourDetails = (e) => {
+        console.log('handlePaymentPerHourDetails', e.target.id);
+        console.log(e.target.value);
+        this.setState({
+            [e.target.id]: e.target.value,
+
+        })
+
+    }
+    handleTypeChange = (e) => {
+        this.setState({showReciept:false});
         if (e.target.value == 1) {
             this.setState({
                 [e.target.id]: e.target.value,
                 isDetailsPerHours: true,
                 isDetailsPaymentFixed: false,
+                priceBeforeVAT:'',
+                discount:'',
+                priceAfterDiscount:''
+
+
             });
         }
         if (e.target.value == 2) {
             this.setState({
                 [e.target.id]: e.target.value,
                 isDetailsPaymentFixed: true,
-                isDetailsPerHours: false
+                isDetailsPerHours: false,
+                pricePerHour:'',
+                hourCount:'',
+                discountHour:'',
+                totalPriceAfterDiscount:'',
+                totalPricePerHour:''
+
             });
         }
     }
