@@ -1,16 +1,6 @@
-// src/components/Sidebar.js
 import React, { Component } from '../../node_modules/react'
-import SidebarIcon from './SidebarIcon.js'
-import { BrowserRouter as Router, Route, Link, withRouter,Switch } from "../../node_modules/react-router-dom";
+import {Link,Switch } from "../../node_modules/react-router-dom";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
-
-import CreateTodo from "./create-todo.component";
-import EditTodo from "./edit-todo.component";
-import TodoList from "./list-todo.component";
-import SignUp from "./signUp.component";
-import DocsUpload from "./docs-upload.component";
-import { withGlobalState } from 'react-globally'
-
 
 export default class Sidebar extends Component {
 
@@ -22,8 +12,6 @@ export default class Sidebar extends Component {
       showList: false,
       authStatus: false
     }
-
-
   }
 
   routeChanged = () => {
@@ -52,10 +40,7 @@ export default class Sidebar extends Component {
     if (localStorage.getItem('loginStatus') === false) this.setState({ loggedOut: false });
   }
 
-  
-
   openNav() {
-    console.log('open');
     document.getElementById("mySidenav").style.width = "250px";
   }
 

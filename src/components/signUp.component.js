@@ -13,6 +13,8 @@ export default class SignUp extends Component {
             password: "",
             id: Number,
             errorCode: '',
+            showMsg: false,
+            errMsg: ''
         };
     }
 
@@ -24,7 +26,12 @@ export default class SignUp extends Component {
 
     handleSubmit = event => {
 
-        const loginDetails = {
+        if (this.state.password == '' || this.state.id == '') {
+            this.setState({ showMsg: true, errMsg: 'יש להזין ערכים' });
+            return;
+        }
+
+        let loginDetails = {
             password: this.state.password,
             _id: this.state.id
         };
@@ -40,20 +47,20 @@ export default class SignUp extends Component {
     render() {
         return (
             <div className="container">
-            <div >
+                <div >
 
-                <div className="card-header" style={{ marginTop: '10em'}}>
-                    <h3 style={{ textAlign: 'center' }}><strong>רישום למערכת</strong></h3>
+                    <div className="card-header" style={{ marginTop: '10em' }}>
+                        <h3 style={{ textAlign: 'center' }}><strong>רישום למערכת</strong></h3>
                         <br></br>
                         <div className="input-group form-group">
-                            <div className="input-group-prepend" style={{ width: '60%',marginRight:'12em' }}>
+                            <div className="input-group-prepend" style={{ width: '60%', marginRight: '12em' }}>
                                 <span className="input-group-text">
                                     <i className="fas fa-user"></i></span>
                                 <input id="id" type="text" className="form-control" placeholder="קוד משתמש" onChange={this.handleChange.bind(this)}></input>
                             </div>
                         </div>
                         <div className="input-group form-group">
-                            <div className="input-group-prepend" style={{ width: '60%',marginRight:'12em' }}>
+                            <div className="input-group-prepend" style={{ width: '60%', marginRight: '12em' }}>
                                 <span className="input-group-text">
                                     <i className="fas fa-user"></i></span>
                                 <input id="password" type="text" className="form-control" placeholder="סיסמא" onChange={this.handleChange.bind(this)}></input>
@@ -61,16 +68,22 @@ export default class SignUp extends Component {
                         </div>
                         <div className="row" >
                             <div className="col-md-6">
-                                <button type="submit"  onClick={this.handleSubmit.bind(this)} className="loginButtons"><strong>הירשם</strong></button>
+                                <button type="submit" onClick={this.handleSubmit.bind(this)} className="loginButtons"><strong>הירשם</strong></button>
                             </div>
                             <div className="col-md-6">
-                                <button type="submit"  className="loginButtons"><Link style={{color:'white'}} to="/">מסך כניסה </Link> </button>
+                                <button type="submit" className="loginButtons"><Link style={{ color: 'white' }} to="/">מסך כניסה </Link> </button>
                             </div>
+                            <hr></hr>
+                            {this.state.showMsg ?
+                            
+                            <div><b>{this.state.errMsg}</b></div> : ''
+                        
+                            }
                         </div>
+                    </div>
                 </div>
-            </div>
 
-        </div>
+            </div>
         );
     }
 }

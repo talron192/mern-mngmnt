@@ -39,7 +39,7 @@ export default class AppointmentModal extends Component {
                     <div className="col=md-3">
                         <select placeholder="סוג אירוע" id="eventType" className="drop-down"
                             onChange={this.handleChange.bind(this)} >
-                            <option style={{ backgroundColor: "lightgrey" }}>סוג פגישה</option>
+                            <option  style={{ backgroundColor: "lightgrey" }}>סוג פגישה</option>
 
                             {EventType.GetEventType().map((action) => <option key={action.key} value={action.value}>{action.value}</option>)}
                         </select>
@@ -61,14 +61,9 @@ export default class AppointmentModal extends Component {
                             <div className="input-group-prepend">
                                 <span className="input-group-text">סיכום</span>
                             </div>
-                            
-                               
-                            
                             <textarea  
-                                className="form-control" aria-label="With textarea" id="details"
-                                
+                                className="form-control" aria-label="With textarea" id="details"                              
                                 onChange={this.handleChange.bind(this)}>
-
                             </textarea>
                         </div>
                         <button className="btn btn-secondary"
@@ -77,7 +72,7 @@ export default class AppointmentModal extends Component {
                     </button>
                         {
                             this.state.showMsg === true ?
-                                <Alert style={{ width: '20em', right: '10em' }} variant="success" onClose={handleDismiss} dismissible>
+                                <Alert style={{ width: 'auto', textAlign: 'center' }} variant="success" onClose={handleDismiss} dismissible>
                                     <Alert.Heading>{this.state.msgEvent}</Alert.Heading>
                                 </Alert> : ''
                         }
@@ -88,19 +83,35 @@ export default class AppointmentModal extends Component {
         )
     }
 
+    isEmptyFields = ()=>{
+
+        if(this.state.details == '' || this.state.eventType =='' || this.state.eventDate == ''){
+            this.setState({isEmptyField:true , showMsg:true , msgEvent : 'יש למלא את כל השדות' })  ;
+            return true ;
+        }
+        return false ;
+
+    }
+
+    changeDateFormat(date){
+        let   arrDate=date.split('-');
+        let newDate = arrDate[2]+'/'+arrDate[1]+'/'+arrDate[0];
+        console.log('newDate',newDate);
+        return newDate;
+    }
+
     onClickHandler = () => {
         const newEvent = {
-            eventDate: this.state.eventDate,
+            eventDate: this.changeDateFormat(this.state.eventDate),
             details: this.state.details,
             eventTime: this.state.eventTime,
             eventType: this.state.eventType,
             eventID: Math.random(),
             _id: this.state._id
         };
-        if(this.state.details == ''){
-            this.isEmptyField=true ;
-            return;
-        }
+        console.log('newEvent',newEvent);
+       if(this.isEmptyFields()) return ;
+
         axios.post('http://localhost:4000/customers/addEvent/' + this.state._id, newEvent)
             .then(res => {
 

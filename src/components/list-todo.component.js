@@ -1,14 +1,10 @@
 import React, { Component } from '../../node_modules/react';
 import axios from '../../node_modules/axios';
-import { withGlobalState } from 'react-globally'
 // import ImporterAPI from './Api';
-import { Link, Router,Route,withRouter,Switch } from '../../node_modules/react-router-dom';
-import ReactTable from "../../node_modules/react-table";
+import { Link,Route,Switch } from '../../node_modules/react-router-dom';
 import EditTodo from "./edit-todo.component";
-
-
+import ReactTable from "../../node_modules/react-table";
 import "../../node_modules/react-table/react-table.css";
-
 
 export default class TodoList extends Component {
     constructor(props) {
@@ -17,25 +13,20 @@ export default class TodoList extends Component {
             list: [],
             showDContent: true,
             showList: true,
-            routOutFromDashBord: false
+            routOutFromDashBord: false,
+            loading:Boolean
 
         }
         this.dataContect = this.dataContect.bind(this);
     }
 
-    // componentDidUpdate (){
-    //     console.log('componentDidUpdate ');
-    //     if(this.state.showList == false){
-
-    //         this.setState({showList:true});
-    //     }
-    // }
     componentDidMount() {
         console.log('componentDidMount', this.props);
         this.getCustomersData();
     }
 
     getCustomersData() {
+        this.setState({loading:true});
         axios.get('http://localhost:4000/customers/get')
             .then(res => {
                 let list = [];
@@ -46,7 +37,7 @@ export default class TodoList extends Component {
                         list.push(e);
                     }
                 })
-                this.setState({ list: list });
+                this.setState({ list: list,loading:false });
             })
             .catch((err) => {
                 console.log(err);
@@ -57,17 +48,6 @@ export default class TodoList extends Component {
         event.preventDefult();
     }
 
-    // customersList(showData) {
-    //     return this.state.list.map(function (currentCustomer, i) {
-    //         return (
-    //             <tr >
-    //                 <td>{currentCustomer.customer_id}</td>
-    //                 <td>{currentCustomer.fullName}</td>
-    //                 <td>{currentCustomer._id}</td>
-    //             </tr>
-    //         )
-    //     });
-    // }
     render() {
 
         const cols = [
@@ -115,9 +95,12 @@ export default class TodoList extends Component {
                         columns={cols}
                         data={this.state.list}
                         filterable
+                        loading= {false}
                         noDataText={"אין נתונים"}
                         defaultPageSize={10}
                         style={{ fontSize: '20px', width: '80%', marginRight: '15em' }}
+                        loading={this.state.loading ? true : false} 
+                        
                     >
                     </ReactTable>
                 <Route path="/edit/:id" exact component={EditTodo} />

@@ -60,6 +60,68 @@ export class Api {
         return arr;
     }
 
+    GetMortgageAadviceList() {
+        let arr = [
+            {
+                key: 1,
+                value: "משכנתא לרכישת דירה למגורים"
+            },
+            {
+                key: 2,
+                value: "משכנתא לרכישת דירה למגורים יד ראשונה מקבלן"
+            },
+            {
+                key: 3,
+                value: "משכנתא לרכישת דירה להשקעה"
+            },
+            {
+                key: 4,
+                value: "משכנתא בקבוצת רכישה"
+            },
+            {
+                key: 5,
+                value: "משכנתא לבנייה עצמית"
+            },
+            {
+                key: 6,
+                value: "משכנתא לקיבוץ\מושב\הרחבה\נחלה"
+            },
+            {
+                key: 7,
+                value: "משכנתא לדירה במחיר למשתכן"
+            },
+            {
+                key: 8,
+                value: "משכנתא לדירה במחיר מטרה"
+            },
+            {
+                key: 9,
+                value: "מחזור משכנתא"
+            },
+            {
+                key: 10,
+                value: "הלוואה לכל מטרה/משכון נכס קיים"
+            },
+            {
+                key: 11,
+                value: "משכנתא בקבוצת רכישה"
+            },
+            {
+                key: 12,
+                value: "הלוואת גישור"
+            },
+            {
+                key: 13,
+                value: "גרירת משכנתא"
+            },
+            {
+                key: 14,
+                value: "משכנתא הפוכה"
+            },
+        ]
+        return arr;
+    }
+
     GetMatiralStatus() {
         let arr = [
             {
@@ -100,6 +162,52 @@ export class Api {
             {
                 key:4,
                 value:"אחר"
+            }
+        ]
+
+        return arr;
+    }
+
+    GetCustomerType() {
+        let arr = [
+            {
+                key:1,
+                value:"עצמאי"
+            },
+            {
+                key:2,
+                value:"שכיר"
+            },
+            {
+                key:3,
+                value:"חברה"
+            }
+        ]
+
+        return arr;
+    }
+
+    GetStatusList() {
+        let arr = [
+            {
+                key:1,
+                value:"קבלת מסמכי לקוח"
+            },
+            {
+                key:2,
+                value:"חתימה על ייפוי כח ליועץ משכנתאות"
+            },
+            {
+                key:3,
+                value:"קבלת אישור עקרוני על ריביות מהבנקים"
+            },
+            {
+                key:4,
+                value:"הצגת הנתונים ללקוח"
+            },
+            {
+                key:5,
+                value:"חתימות בבנק על לקיחת מחזור משכנתא"
             }
         ]
 

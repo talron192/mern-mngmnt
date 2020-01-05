@@ -8,6 +8,9 @@ import './style.css';
 
 const ActionType = new Api();
 const MatiralStatus = new Api();
+const CustomerType = new Api();
+const MortgageAadviceList = new Api();
+
 
 export default class CreateTodo extends Component {
     list = [];
@@ -32,10 +35,13 @@ export default class CreateTodo extends Component {
             address: { houseAddress: '', city: '', postalCode: '', poBox: '' },
             pathFolder: '',
             actionType: '',
+            MortgageAdviceType: '',
             matiralStatus: '',
             sourceArrival: '',
+            customerType: '',
             toNextStep: false,
-            changeStyle: false
+            changeStyle: false,
+            isMortgageAdvice: false
 
             //isCompleted:false
         }
@@ -57,6 +63,11 @@ export default class CreateTodo extends Component {
             this.setState({
                 changeStyle: false
             })
+        }
+        if (e.target.id == 'actionType') {
+
+            let isMortgageAdvice = e.target.value.split("-")[0] == "1" ? true : false;
+            this.setState({ isMortgageAdvice: isMortgageAdvice });
         }
         this.setState({
             [e.target.id]: e.target.value
@@ -123,8 +134,10 @@ export default class CreateTodo extends Component {
             phoneNumber: this.state.phoneNumber,
             fax: this.state.fax,
             actionType: this.state.actionType,
+            mortgageAdviceType: this.state.MortgageAdviceType,
             matiralStatus: this.state.matiralStatus,
             sourceArrival: this.state.sourceArrival,
+            customerType: this.state.customerType,
             address: {
                 houseAddress: this.state.address.houseAddress,
                 city: this.state.address.city,
@@ -133,6 +146,7 @@ export default class CreateTodo extends Component {
             },
             pathFolder: 'public/uploads/' + this.state._id,
         };
+        console.log('newCustomer', newCustomer);
 
         axios.post('http://localhost:4000/customers/add', newCustomer)
             .then(res => {
@@ -175,7 +189,7 @@ export default class CreateTodo extends Component {
                 <hr></hr>
                 <div className="row">
                     <div className="col-md-4">
-                        <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }}  style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="text" onChange={this.handleChange.bind(this)}
+                        <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="text" onChange={this.handleChange.bind(this)}
                             id="email" placeholder="אימייל"></input>
                         {this.state.changeStyle == true && this.state.email == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
 
@@ -184,15 +198,14 @@ export default class CreateTodo extends Component {
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="date" onChange={this.handleChange.bind(this)}
                             id="issueDate" placeholder="תאריך הנפקת תעודת זהות"></input>
                     </div>
-                    <div style={{ marginTop: '-1em', marginLeft: '5em' }}
+                    <div style={{ marginTop: '-1em', marginLeft: '9em', marginRight: '5em' }}
                         className="col=md-2"
                         className="gender-position"
                         className={this.state.gender === "men" ? "gender-color" : ""} >
                         <label className="gender-font"
                             value={"men"}
                             id="gender"
-                            onClick={() => this.selectGender(1)
-                            }>
+                            onClick={() => this.selectGender(1)}>
                             <i className="fa fa-male" aria-hidden="true"></i>
                         </label>
                     </div>
@@ -246,13 +259,26 @@ export default class CreateTodo extends Component {
                 <hr></hr>
                 <div className="row">
                     <div className="col=md-4" style={{ marginRight: "1em" }}>
-                        <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} id="actionType" onChange={this.handleChange.bind(this)} className="drop-down">
+                        <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} id="actionType"
+                            onChange={this.handleChange.bind(this)} className="drop-down">
                             <option style={{ backgroundColor: "lightgrey" }}>סוג פעילות</option>
                             {ActionType.GetTypeAction().map((action) => <option key={action.key} value={action.key + '-' + action.value}>{action.value}</option>)}
                         </select>
                         {this.state.changeStyle == true && this.state.actionType == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
 
                     </div>
+                    {this.state.isMortgageAdvice ?
+
+                        <div className="col=md-4" style={{ marginRight: "1em" }}>
+                            <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} id="MortgageAdviceType"
+                                onChange={this.handleChange.bind(this)} className="drop-down" style={{textIndent: '0em'}}>
+                                <option style={{ backgroundColor: "lightgrey" }}>סוג משכנתא</option>
+                                {MortgageAadviceList.GetMortgageAadviceList().map((type) => <option key={type.key} value={type.value}>{type.value}</option>)}
+                            </select>
+                            {this.state.changeStyle == true && this.state.actionType == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
+
+                        </div> : ''
+                    }
                     <div className="col=md-4" style={{ marginRight: "1em" }}>
                         <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} id="matiralStatus" onChange={this.handleChange.bind(this)} className="drop-down">
                             <option style={{ backgroundColor: "lightgrey" }}>מצב משפחתי</option>
@@ -260,9 +286,15 @@ export default class CreateTodo extends Component {
                         </select>
                     </div>
                     <div className="col=md-4" style={{ marginRight: "1em" }}>
+                        <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} id="customerType" onChange={this.handleChange.bind(this)} className="drop-down">
+                            <option style={{ backgroundColor: "lightgrey" }}>מעמד</option>
+                            {CustomerType.GetCustomerType().map((customerType) => <option key={customerType.key} value={customerType.value}>{customerType.value}</option>)}
+                        </select>
+                    </div>
+                    {/* <div className="col=md-4" style={{ marginRight: "1em" }}>
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="text" onChange={this.handleChange.bind(this)}
                             id="sourceArrival" placeholder="מקור הגעה"></input>
-                    </div>
+                    </div> */}
                 </div>
                 <hr></hr>
 

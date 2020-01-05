@@ -9,7 +9,7 @@ export default class EditTodo extends Component {
         super(props);
         this.state = {
             selectedFile: null,
-            isSelected:false,
+            isSelected: false,
             uploaded: true,
             show: false,
             msg: ''
@@ -19,24 +19,29 @@ export default class EditTodo extends Component {
     onChangeHandler = event => {
         this.setState({
             selectedFile: event.target.files[0],
-            isSelected:true
+            isSelected: true
         })
     }
 
     onClickHandler = () => {
         const fileData = new FormData();
-        // if (Object.entries(fileData).length !== 0 && fileData.constructor === Object) {
-            fileData.append('file', this.state.selectedFile, this.state.selectedFile.name);
-            axios.post("http://localhost:4000/customers/upload", fileData)
-                .then(res => { // then print response status
-                    this.setState({
-                        uploaded: true,
-                        show: true,
-                        msg: res.data
-                    });
-
+        if(! this.state.selectedFile) {
+            this.setState({
+                show:true,
+                msg:'יש להעלות ממסך' 
+            })
+            return;
+        }
+        fileData.append('file', this.state.selectedFile, this.state.selectedFile.name);
+        axios.post("http://localhost:4000/customers/upload", fileData)
+            .then(res => { // then print response status
+                this.setState({
+                    uploaded: true,
+                    show: true,
+                    msg: res.data
                 });
-        // }
+
+            });
     }
 
     componentDidMount() {
@@ -61,7 +66,7 @@ export default class EditTodo extends Component {
                         <button type="button" className="btn btn-dark" onClick={this.onClickHandler}>העלאה</button>
                     </div>
                     <div className="custom-file">
-                        <input type="file" name="file"  onChange={this.onChangeHandler}
+                        <input type="file" name="file" onChange={this.onChangeHandler}
                             className="custom-file-input" />
                         <label className="custom-file-label" >{this.state.isSelected == true ? this.state.selectedFile.name : 'בחר מסמך'}</label>
                     </div>

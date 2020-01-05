@@ -5,6 +5,8 @@ import Modal from '../../node_modules/react-modal';
 import ModalHeader from '../../node_modules/react-bootstrap/ModalHeader';
 import ModalBody from '../../node_modules/react-bootstrap/ModalBody';
 import ProductionReceipt_Template from './ProdRecipet_template';
+import Alert from '../../node_modules/react-bootstrap/Alert';
+
 
 const PaidType = new Api();
 
@@ -32,7 +34,13 @@ export default class ProductionReceipt extends Component {
             RecieptModalToShow: false,
             RecieptContent: '',
             totalPricePerHour: '',
-            totalPriceAfterDiscount: ''
+            totalPriceAfterDiscount: '',
+            showMailDetails:false,
+            loading:Boolean,
+            subject: '',
+            emailContent: '',
+            emailIsSent: false,
+            responseAfterSent: '',
 
         }
     }
@@ -119,13 +127,48 @@ export default class ProductionReceipt extends Component {
                             this.state.showReciept == true ?
                                 <div className="row" style={{ padding: '3em' }}>
                                     <br></br>
-                                    <div className="col-md-6" style={{ textAlign: 'center', textDecoration: 'none' }}> <button className="btn btn-secondary" onClick={this.sendToEmail.bind(this)}>שליחה למייל</button></div>
+                                    <div className="col-md-6" style={{ textAlign: 'center', textDecoration: 'none' }}> <button className="btn btn-secondary" onClick={this.showEmailDetails.bind(this)}>שליחה למייל</button></div>
                                     <div className="col-md-6" style={{ textAlign: 'center', textDecoration: 'none' }}> <button className="btn btn-secondary" onClick={this.previewReceipt.bind(this)}>הצגת קבלה</button></div>
                                     <hr></hr>
                                 </div>
                                 : ''
                         }
-                        <div></div>
+                         {this.state.showMailDetails ?
+                        <div>
+                            <div className="row">
+
+                                <div className="col-md-12" style={{ paddingTop: '1em' }}>
+                                    <input type="text" onChange={this.handleChange.bind(this)} style={{ border: '0', borderBottom: '1px solid grey' }} className="form-control" placeholder="נושא" aria-label="Example text with button addon" aria-describedby="button-addon1" id="subject"></input>
+                                </div>
+                            </div>
+                            <div className="row">
+
+                                <div className="col-md-12" >
+
+                                    <div className="input-group mb-3" style={{ paddingTop: '2em' }} >
+                                        <div className="input-group-prepend" >
+                                            <button className="btn btn-outline-secondary" type="button" disabled={this.isDisabled()} onClick={this.sendToEmail.bind(this)}>
+                                                {this.isDisabled() && <i className="fa fa-refresh fa-spin"></i>}
+                                                שלח
+                                                </button>
+                                        </div>
+                                        <input id="emailContent" type="text" className="form-control" onChange={this.handleChange.bind(this)} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" ></input>
+                                    </div>
+                                </div>
+                            </div>
+                            {this.state.emailIsSent ?
+
+                                <div className="row">
+                                    <div className='col-md-12'>
+                                        <Alert variant="success" onClose={handleDismiss} dismissible>
+                                            <Alert.Heading>{this.state.responseAfterSent}</Alert.Heading>
+                                        </Alert>
+                                    </div>
+                                </div> : ''
+                            }
+                        </div>
+                        : ''}
+
                     </div>
                 </div>
                 <hr></hr>
@@ -148,9 +191,36 @@ export default class ProductionReceipt extends Component {
         });
     }
 
+    showEmailDetails = () => {
+
+        this.setState({ showMailDetails: true });
+    }
+
+    isDisabled = () => {
+        if (this.state.loading == true) return true;
+    }
+
     sendToEmail = () => {
-        const emailData = { email: this.props.state.obj.email }
+        const emailData = { email: this.props.state.obj.email };
+        this.setState({ loading: true });
+
         axios.post('http://localhost:4000/customers/sendEmail/' + this.state._id, emailData)
+    }
+    sendToEmail = () => {
+        const emailData = { templateName: 'ProdRecipet', email: this.props.state.obj.email, subject: this.state.subject, content: this.state.emailContent }
+        console.log(emailData);
+        this.setState({ loading: true });
+        axios.post('http://localhost:4000/customers/sendEmail/' + this.state._id, emailData).then(
+            (res) => {
+                this.setState({
+                    emailIsSent: true,
+                    responseAfterSent: res.data,
+                    loading: false
+                });
+
+                console.log(res.data);
+            }
+        )
     }
     closePreviewReceipt = e => {
         this.setState({
@@ -227,6 +297,7 @@ export default class ProductionReceipt extends Component {
                 [e.target.id]: e.target.value,
                 isDetailsPerHours: true,
                 isDetailsPaymentFixed: false,
+                showMailDetails:false,
                 priceBeforeVAT:'',
                 discount:'',
                 priceAfterDiscount:''
@@ -239,6 +310,7 @@ export default class ProductionReceipt extends Component {
                 [e.target.id]: e.target.value,
                 isDetailsPaymentFixed: true,
                 isDetailsPerHours: false,
+                showMailDetails:false,
                 pricePerHour:'',
                 hourCount:'',
                 discountHour:'',

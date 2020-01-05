@@ -17,9 +17,12 @@ class Login extends Component {
             id: Number,
             errorCode: '',
             authMsg: '',
+            errorMsg: '',
             authStatus: false,
             emptyField: false,
-            isReq: false
+            isReq: false,
+            loading: Boolean
+
 
         };
     }
@@ -50,6 +53,9 @@ class Login extends Component {
         this.props.history.push('/sign-up');
 
     }
+    isDisabled = () => {
+        if (this.state.loading == true) return true;
+    }
 
     handleSubmit = event => {
         if (!this.state.actionType) {
@@ -63,22 +69,30 @@ class Login extends Component {
             _id: this.state.id,
             actionType: this.state.actionType
         };
+        this.setState({ loading: true });
+
         axios.post('http://localhost:4000/customers/login', { loginDetails })
-            .then(res => {
+            .then((res) => {
+                
                 if (res.status == 200) {
-                    this.setState({ authStatus: true });
+                    this.setState({ authStatus: true , loading:false});
                     // this.routesChange();
                 }
                 if (res.status == 201) {
-                    this.setState({ authMsg: res.data, authStatus: false });
+                    this.setState({ authMsg: res.data, authStatus: false, loading:false });
 
                 }
                 loginDetails.authStatus = this.state.authStatus;
+                if(res.data.token){
+
+                    loginDetails.token=res.data.token ;
+                }
 
                 this.props.onLogin(loginDetails);
-            })
+            } )
             .catch(function (err) {
-                console.log('error', err);
+                if(err) alert("נסיונות החיבור נכשלו, נסה שנית מאוחר יותר");
+                // console.log('error', err.message);
             })
     }
 
@@ -118,7 +132,10 @@ class Login extends Component {
                         </div>
                         <div className="row" >
                             <div className="col-md-6">
-                                <button type="submit"  onClick={this.handleSubmit.bind(this)} className="loginButtons">התחבר</button>
+                                <button type="submit"  onClick={this.handleSubmit.bind(this)} className="loginButtons">
+                                {this.isDisabled() && <i className="fa fa-refresh fa-spin"></i>}
+                                    התחבר
+                                    </button>
                             </div>
                             <div className="col-md-6">
                                 <button type="submit" className="loginButtons"><Link style={{color:'white'}} to="/signUp/">הירשם</Link> </button>

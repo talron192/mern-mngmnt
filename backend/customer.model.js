@@ -38,10 +38,16 @@ let Customer= new Shema({
     actionType:{
         type:String
     },
+    mortgageAdviceType:{
+        type:String
+    },
     matiralStatus:{
         type:String
     },
     sourceArrival:{
+        type:String
+    },
+    status:{
         type:String
     },
     address:{
@@ -53,6 +59,14 @@ let Customer= new Shema({
         type:[],
         ref:'event'
         
+    },
+    processStatus:{
+        type:[],
+        ref:'processStatus'
+        
+    },
+    customerType:{
+        type:String
     },
     pathFolder:{
         type:String

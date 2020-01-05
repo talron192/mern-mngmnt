@@ -8,28 +8,24 @@ const Routes = express.Router();
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const pdf = require('html-pdf');
-const path_ = require('path');
+const phantompdf = require('phantom-html-to-pdf')();
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
+const rateLimit = require("express-rate-limit");
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-
-// var url = 'mongodb://talRon:talro1992@ds131737.mlab.com:31737/heroku_cfp0fh8k‏';
-// var url = 'mongodb+srv://talGlobalRon:talro1992!@cluster0-dklnq.mongodb.net/test?retryWrites=true&w=majority';
-// var url = 'mongodb://talRon192:talro1992!@ds337507-a0.mlab.com:37507,ds337507-a1.mlab.com:37507/heroku_m6ndjfwk?replicaSet=rs-ds337507';
-// var url = 'mongo ds337507-a0.mlab.com:37507/heroku_m6ndjfwk -u talRon192 -p talro1992!';
-// var url = 'mongodb+srv://talRon:talro1992@cluster0-qpd3p.mongodb.net/customers';
+// const url = 'mongodb+srv://talGlobalRon:rXZL7HbEaAZw03tO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
 var url = 'mongodb://127.0.0.1:27017/customers';
 
 const port = process.env.MONGODB_URI || PORT;
+
 
 let Customer = require('./customer.model');
 let LoginDetails = require('./loginDetails.model');
 var pathToCustomerId;
 const multer = require('multer');
 // const ejs = require('ejs');
-
 
 //****Upload files*****/
 
@@ -94,7 +90,8 @@ Routes.route('/sendEmail/:id').post(function (req, res) {
             console.log(error);
         } else {
             console.log('Email sent: ' + info.response);
-            res.json('ייפוי הכח נשלח בהצלחה ללקוח');
+            req.body.templateName == 'PowerAttorney' ? res.json('ייפוי כח נשלח בהצלחה ללקוח') : res.json('קבלה נשלחה למייל') 
+            // res.json('ייפוי כח נשלח בהצלחה ללקוח');
         }
     });
 })
@@ -200,13 +197,20 @@ Routes.route('/get').get(function (req, res) {
     });
 });
 
+
+const loginLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 1 hour window
+    max: 5, // start blocking after 5 requests
+    message:
+      "Too many accounts created from this IP, please try again after an hour"
+  });
+
 Routes.route('/signUp').post(async (req, res) => {
 
     let _id = await (req.body._id);
     let salt = await bcrypt.genSalt();
     let hashPass = await bcrypt.hash(req.body.password, salt);
     const params = await { _id: _id, password: hashPass };
-    console.log('fsdfsdfsd', params);
 
     let loginDetails = new LoginDetails(params);
 
@@ -218,38 +222,48 @@ Routes.route('/signUp').post(async (req, res) => {
 
 });
 
-Routes.route('/login').post(async (req, res_) => {
+Routes.route('/login').post(loginLimiter,async (req, res_) => {
     let _id = await Number(req.body.loginDetails._id);
     // LoginDetails.findById(_id, (err, loginDetails) => {
-
+    console.log(req.body);
     LoginDetails.findById(_id).then(loginDetails => {
+        
+        //  const token =  jwt.sign(
+        //     {
+        //       userName: loginDetails._id,
+        //       password: loginDetails.password
+        //     },
+        //     'bfbdxbdfbdfmjh,jkgh',
+        //     { expiresIn: '1h' }
+        //   );
 
         bcrypt.compare(req.body.loginDetails.password, loginDetails.password).then(res => {
             if (res) {
-                res_.status(200).json('Verification done');
+                res_.status(200).json({token: 'token'});
             } else {
                 console.log('No matched');
                 res_.status(201).json('אחד מהפרטים שהוקלדו שגויים!');
             }
         })
+
     }).catch(err => {
-        console.log('ERROR', err);
+        res_.status(500).json(err);
     });
 });
 
-Routes.route('/deleteEvent/:id').post(function (req, res) {
-    var customer_id = req.body.customer_id;
+ Routes.route('/deleteEvent/:id').post(function (req, res) {
+    var customer_id = req.params.id;
     var eventObj = req.body;
-
+    query = { '_id': customer_id },
     update = {
         $set: { event: eventObj }
     },
         options = { upsert: true, useFindAndModify: false };
-
-    Customer.findOneAndUpdate(customer_id, update, options, function (err, data) {
+    Customer.findOneAndUpdate(query, update, options, function (err, data) {
         if (err) {
             return res.status(500).send(err);
         }
+        // console.log('data',data);
         if (!data) {
             return res.status(404).end();
         }
@@ -306,11 +320,11 @@ Routes.route('/addEvent/:id').post(function (req, res) {
             customer.event = event;
         }
         customer.save()
-            .then(customer => {
+            .then(() => {
                 res.send('אירוע נוצר בהצלחה!')
             })
             .catch(err => {
-                res.status(400).send('update not possible');
+                res.status(400).send('update not possible',err);
             })
         // }
     })
@@ -323,7 +337,6 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
     Customer.findById(id, function (err, customer) {
         var path = `../public/uploads/${id}`;
         if (!fs.existsSync(path)) {
-            console.log('before create dir');
             fs.mkdirSync(path);
         }
         fs.readFile(`../backend/templates/${templateName}.html`, 'utf8', (err, file) => {
@@ -331,23 +344,30 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
             fileToPdf = file;
             if (templateName == 'ProdRecipet') content_recieptFile = replaceAll(file, req.body, customer);
             if (templateName == 'PowerAttorney') content_recieptFile = replaceAllVars(file, req.body, customer);
-            //  fs.writeFile(path+`/${templateName}.html`,content_recieptFile,(err,res_)=>{
-            //     console.log('done');
-            //  });
-            var options = {
-                format: 'A4',
-                base: path + `/${templateName}.html`
-            };
-            fs.readFile(path + `/${templateName}.html`, (err, file) => {
-                pdf.create(fileToPdf, options).toFile(`../public/uploads/${id}/${templateName}.pdf`,
-                    (err) => {
-                        if (err) return console.log('error', err);
-                    })
-                res.json(`המסמך נשמר בתיקית הלקוח`);
-                //    console.log(file);
+            console.log(content_recieptFile);
+            // phantompdf({html:content_recieptFile},function(err,pdf){
+            //      fs.createWriteStream(`../public/uploads/${id}/${templateName}.pdf`);
+            //      res.json(`המסמך נשמר בתיקית הלקוח.`);
+            // })
+            fs.writeFile(path+`/${templateName}.html`,content_recieptFile,(err,res_)=>{
+                console.log('done');
+                var options = {
+                    format: 'A4',
+                    base: path + `/${templateName}.html`
+                };
+                fs.readFile(path + `/${templateName}.html`, 'utf8', (err, file) => {
+                    pdf.create(content_recieptFile, options).toFile(`../public/uploads/${id}/${templateName}.pdf`,
+                        (err) => {
+                            if (err) return console.log('error', err);
+                        })
+                    res.json(`המסמך נשמר בתיקית הלקוח`);
+                    //    console.log(file);
+    
+                    // res.json(`../../public/uploads/${id}/Recipts/ProdReciept.html`);
+                });
+             });
 
-                // res.json(`../../public/uploads/${id}/Recipts/ProdReciept.html`);
-            });
+
         });
     });
 })
@@ -377,11 +397,11 @@ Routes.route('/addReceipt/:id').post(function (req, res) {
 function replaceAllVars(file, details, customer) {
     var mapObj = {
         contactName: customer.fullName,
-        ID: customer._id,
+        tz: customer._id,
         busNAME: customer.fullName,
         numHp: customer._id
     }
-    file = file.replace(/contactName|ID|busNAME|numHp/gi, function (matched) {
+    file = file.replace(/contactName|tz|busNAME|numHp/gi, function (matched) {
         return mapObj[matched];
     });
     return file;
@@ -417,7 +437,10 @@ function replaceAll(file, recipetDetails, customer) {
 
 Routes.route('/add').post(function (req, res) {
     let customer = new Customer(req.body);
-    fs.mkdirSync(`../public/uploads/${customer._id}`);
+    console.log(customer);
+    if ( ! fs.existsSync(`../public/uploads/${customer._id}`) ) {
+        fs.mkdirSync(`../public/uploads/${customer._id}`);
+    }
 
     let address = req.body.address;
     customer.address = address;
@@ -427,11 +450,39 @@ Routes.route('/add').post(function (req, res) {
         });
 });
 
-Routes.route('/files-list').post(function (req, res) {
-    let files = fs.readFileSync('756756867754');
+Routes.route('/saveProcessStatus/:id').post(function (req, res) {
+    var id = req.params.id;
+    var processStatus = req.body;
+    console.log('processStatus',processStatus);
+    console.log('id',id);
+    Customer.findById(id, function (err, customer) {
 
-    // console.log('files', files);
-})
+        customer.processStatus = processStatus ;
+        customer.save()
+            .then(() => {
+                res.send('נשמר בהצלחה!')
+            })
+            .catch(err => {
+                res.status(400).send('update not possible',err);
+            })
+        // }
+    })
+});
+
+Routes.route('/getProcessStatus/:id').post(function (req, res) {
+    let id = req.params.id;
+    console.log('getProcessStatus id',id);
+    Customer.findById(id, function (err, customer) {
+        if (err) {
+            console.log("error:", err);
+        } else {
+            res.json(customer.processStatus);
+
+        }
+    });
+});
+
+
 
 /*upload files */
 

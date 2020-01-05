@@ -1,11 +1,16 @@
-import React, { Component } from '../../node_modules/react';
+import React, { Component, useContext } from '../../node_modules/react';
 import axios from '../../node_modules/axios';
-import { Link, Router, Route, withRouter,Switch } from '../../node_modules/react-router-dom';
+import { Datatable } from "../../node_modules/@o2xp/react-datatable";
+import { Link, Route, Switch } from '../../node_modules/react-router-dom';
 import Modal from '../../node_modules/react-modal';
 import DocsUpload from "./docs-upload.component";
 import AppointmentModal from './AppointmentModal';
+import EventsHistoryModal from './EventsHistoryModal';
 import ProductionReceipt from './ProductionReceipt';
 import PowerAttorney from './PowerAttorney';
+import ProcessStatus from './ProcessStatus';
+import { StateProvider } from "./stateContext";
+
 // import EventsTable from './EventsTable';
 import $ from '../../node_modules/jquery';
 import '../../node_modules/font-awesome/css/font-awesome.min.css';
@@ -23,11 +28,19 @@ const customStyles = {
     }
 };
 
-//--->button > edit > start	
+
+
+
+//--->button > edit > start	א
 $(document).on('click', '.btn_edit', function (event) {
     event.preventDefault();
     var tbl_row = $(this).closest('tr');
-
+    $('input').on("keypress", function (e) {
+        /* ENTER PRESSED*/
+        if (e.keyCode == 13) {
+            console.log('enter');
+        }
+    });
     tbl_row.find('.btn_save').show();
     tbl_row.find('.btn_cancel').show();
 
@@ -98,6 +111,8 @@ export default class EditTodo extends Component {
             modalIsOpen: false,
             prodReceiptModalIsOpen: false,
             PowerAttorneyIsOpen: false,
+            processStatus: false,
+            eventsHistory: false,
             toEdit: false,
             accsessBtnSave: false,
             eventDate: '',
@@ -113,7 +128,11 @@ export default class EditTodo extends Component {
         this.openPowerAttorney = this.openPowerAttorney.bind(this);
         this.closePowerAttorney = this.closePowerAttorney.bind(this);
 
+        this.openProcessStatus = this.openProcessStatus.bind(this);
+        this.closeProcessStatus = this.closeProcessStatus.bind(this);
 
+        this.openEventsHistory = this.openEventsHistory.bind(this);
+        this.closeEventsHistory = this.closeEventsHistory.bind(this);
 
     }
 
@@ -136,6 +155,10 @@ export default class EditTodo extends Component {
         });
     }
     openPowerAttorney() {
+        // const State = useContext(StateProvider);
+
+        // console.log('State', State);
+
         this.setState({
             PowerAttorneyIsOpen: true,
         });
@@ -143,6 +166,24 @@ export default class EditTodo extends Component {
     closePowerAttorney() {
         this.setState({
             PowerAttorneyIsOpen: false,
+        });
+    }
+
+    openProcessStatus() {
+        this.setState({ processStatus: true });
+    }
+    closeProcessStatus() {
+        this.setState({
+            processStatus: false,
+        });
+    }
+
+    openEventsHistory() {
+        this.setState({ eventsHistory: true });
+    }
+    closeEventsHistory() {
+        this.setState({
+            eventsHistory: false,
         });
     }
 
@@ -177,12 +218,11 @@ export default class EditTodo extends Component {
                 if (fileIndex === i) {
                     correctArrayFiles.push({ fileName: filesList[fileIndex], uploadTime: filesTimeUpload[i] });
                 }
-
             }
         }
         return correctArrayFiles;
-
     }
+
     getListFiles() {
         axios.get("http://localhost:4000/customers/getListFiles/" + this.props.match.params.id, { id: this.props.match.params.id })
             .then(res => { // then print response status
@@ -248,6 +288,7 @@ export default class EditTodo extends Component {
         if (!this.state.commentsArr.length) {
             return false;
         }
+        // return this.mapComments() ;
         return (
             <table className="table table-hover">
                 <tbody>
@@ -267,12 +308,53 @@ export default class EditTodo extends Component {
     }
 
     mapComments = () => {
+        // let options  = {
+        //     keyColumn: 'id',
+        //     data: {
+        //         columns: [ 
+        //             {
+        //                 id: "id",
+        //                 label: "id",
+        //                 colSize: "80px"
+        //             },
+        //             {
+        //                 id: "name",
+        //                 label: "name",
+        //                 colSize: "150px"
+        //             },
+        //             {
+        //                 id: "age",
+        //                 label: "age",
+        //                 colSize: "50px"
+        //             },
+        //         ],
+        //         rows: [
+        //             {
+        //                 id: "50cf",
+        //                 age: 28,
+        //                 name: "Kerr Mayo"
+        //             },
+        //             {
+        //                 id: "209",
+        //                 age: 34,
+        //                 name: "Freda Bowman"
+        //             },
+        //             {
+        //                 id: "2dd81ef",
+        //                 age: 14,
+        //                 name: "Becky Lawrence"
+        //             }
+        //         ],
+        //     }
+        // }
+        //     return <Datatable options={options} />;
+
         return this.state.commentsArr.map((comment, i) => {
             var row_id = comment.eventID.toString();
             return (
                 <tr key={i} id={'row_id_' + row_id}>
                     <td> {i + 1}</td>
-                    <td><div className="row_data" edit_type="click" id={'eventDate_' + comment.eventID.toString()} onChange={this.handleCommentsChange.bind(this)}>{this.convertDate(comment.eventDate)}</div></td>
+                    <td><div className="row_data" edit_type="click" id={'eventDate_' + comment.eventID.toString()} onChange={this.handleCommentsChange.bind(this)}>{comment.eventDate}</div></td>
                     <td><div style={{ maxWidth: '230px' }} className="row_data" id={'eventType_' + comment.eventID.toString()} value={comment.eventType} onChange={this.handleCommentsChange.bind(this)} >{comment.eventType}</div></td>
                     <td><div style={{ maxWidth: '35em', whiteSpace: 'pre-wrap', textAlign: 'right' }} className="row_data" edit_type="click" id={'details_' + comment.eventID.toString()} onChange={this.handleCommentsChange.bind(this)}>{comment.details}</div></td>
                     <td style={{ display: 'inline-flex' }}>
@@ -300,8 +382,56 @@ export default class EditTodo extends Component {
             editableEvent.eventID = btn_id;
 
         }
-        return editableEvent;
+        console.log('buildEditableEventObj', editableEvent);
+        return this.ignoreBreakRowsForObject(editableEvent, editableEvent.details);
 
+    }
+
+    ignoreBreakRowsForObject(editableEvent, eventString) {
+
+        for (let i = 0; i <= eventString.length; i++) {
+            if (
+                (eventString.charAt(i) == "<" &&
+                    eventString.charAt(i + 1) === "d" &&
+                    eventString.charAt(i + 2) === "i" &&
+                    eventString.charAt(i + 3) === "v" &&
+                    eventString.charAt(i + 4) === ">"
+                )
+                ||
+                (eventString.charAt(i) == "&" &&
+                    eventString.charAt(i + 1) === "n" &&
+                    eventString.charAt(i + 2) === "b" &&
+                    eventString.charAt(i + 3) === "s" &&
+                    eventString.charAt(i + 4) === "p" &&
+                    eventString.charAt(i + 5) === ";"
+                )
+                ||
+                (
+                    eventString.charAt(i) == "<" &&
+                    eventString.charAt(i + 1) == "b" &&
+                    eventString.charAt(i + 2) == "r" &&
+                    eventString.charAt(i + 3) == ">"
+                )
+            ) {
+                eventString = eventString.replace(String("<div>"), " ");
+                eventString = eventString.replace(String("<br>"), '\n');
+                eventString = eventString.replace(String("&nbsp;"), " ");
+            }
+            else if (eventString.charAt(i) == "<" &&
+                (eventString.charAt(i + 1) == "/" &&
+                    eventString.charAt(i + 2) == "d" &&
+                    eventString.charAt(i + 3) == "i" &&
+                    eventString.charAt(i + 4) == "v" && eventString.charAt(i + 5) == ">")
+            ) {
+                eventString = eventString.replace(String("</div>"), " ");
+            }
+
+
+            if (i == eventString.length - 1) {
+                editableEvent.details = eventString;
+            }
+        }
+        return editableEvent;
     }
 
     deleteEditableEvent = (btn_id, row_id) => {
@@ -309,6 +439,9 @@ export default class EditTodo extends Component {
 
         let editableEvent = this.buildEditableEventObj(row_data, btn_id);
         let arrOfEvents = this.state.commentsArr;
+        this.deleteEvent(this.state.commentsArr);
+        console.log(this.state.commentsArr)
+
         for (let i in arrOfEvents) {
 
             if (arrOfEvents[i].eventID == editableEvent._id) {
@@ -318,13 +451,14 @@ export default class EditTodo extends Component {
                 });
             }
         }
-        this.deleteEvent(this.state.commentsArr);
     }
 
     deleteEvent(editableEvent) {
+        console.log(this.state._id);
         axios.post('http://localhost:4000/customers/deleteEvent/' + this.state._id, editableEvent)
             .then(res => {
                 console.log('after then response', res.data);
+
             })
             .catch(err => {
                 console.log(err);
@@ -333,7 +467,6 @@ export default class EditTodo extends Component {
 
     saveEditableEvent = (btn_id, row_id) => {
         let row_data = document.getElementById('row_id_' + btn_id).cells;
-
         let editableEvent = this.buildEditableEventObj(row_data, btn_id);
         this.uploadEvent(editableEvent);
         $(document).find('.btn_save').hide();
@@ -371,7 +504,6 @@ export default class EditTodo extends Component {
         // }
     }
     handleChange = (e) => {
-        console.log(e.target.value);
         this.setState({
             [e.target.id]: e.target.value
         });
@@ -410,6 +542,7 @@ export default class EditTodo extends Component {
     }
 
     ignoreBreakRows(events) {
+        console.log('ignoreBreakRows', events);
         let eventString;
         let eventsArray = events;
         for (let key in events) {
@@ -456,16 +589,10 @@ export default class EditTodo extends Component {
                     if (i == eventString.length - 1) {
                         eventsArray[key].details = eventString;
                     }
-
                 }
             }
-
-
-
         }
-
         return eventsArray;
-
     }
 
     componentDidMount() {
@@ -489,7 +616,6 @@ export default class EditTodo extends Component {
     convertDate(date) {
         if (date == undefined || date == '') return '';
         var from = date.split("-");
-        console.log(from);
         date = from[2] + '/' + from[1] + '/' + from[0];
         return date;
     }
@@ -503,7 +629,7 @@ export default class EditTodo extends Component {
                         <div className="row">
                             <div className="col-md-12">
                                 <h3><b></b>כרטיס לקוח של : {this.state.obj.fullName}</h3>
-                                <span style={{ float: "left" }}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים  </Link><i className="fa fa-upload" aria-hidden="true"></i> </span>
+                                <span style={{ paddingLeft: '1em', color: '#f7b742', float: "left" }}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים  </Link><i className="fa fa-upload" aria-hidden="true"></i> </span>
                             </div>
                         </div>
                         <hr></hr>
@@ -556,15 +682,28 @@ export default class EditTodo extends Component {
                             <div className="col-md-3">
                                 <label> סוג פעילות: <b>{this.state.obj.actionType.split("-")[1]}</b> </label>
                             </div>
+                            {
+                                this.state.obj.actionType.split("-")[0] == '1' ?
+                                    <div className="col-md-3">
+                                        <label>סוג משכנתא: <b>{this.state.obj.mortgageAdviceType}</b> </label>
+                                    </div> : ''
+
+                            }
+
                             <div className="col-md-3">
                                 <label> מצב משפחתי: <b>{this.state.obj.matiralStatus}</b> </label>
                             </div>
                             <div className="col-md-3">
-                                <label>מקור הגעה: <b>{this.state.obj.sourceArrival}</b> </label>
-                            </div>
-                            <div className="col-md-3">
                                 <label>גיל: <b>{this.state.obj.age}</b> </label>
                             </div>
+                        </div>
+                        <hr></hr>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <label>מעמד: <b>{this.state.obj.customerType}</b> </label>
+
+                            </div>
+
                         </div>
                         <hr></hr>
                         <div className="row">
@@ -586,8 +725,32 @@ export default class EditTodo extends Component {
                                     הפקת ייפוי כח
                             </button>
                             </div>
+                            {this.state.obj.actionType.split("-")[0] === '1' ?
 
+                                <div className="col-md-3">
+                                    <button style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
+                                        onClick={this.openProcessStatus}>
+                                        עדכון סטאטוס
+                            </button>
+                                </div> : ''
+                            }
                         </div>
+                        <hr />
+                        {/* <div className="row">
+                            <div className="col-md-3">
+                                <button style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }} className="btn btn-secondary"
+                                    onClick={this.openEventsHistory}>
+                                    היסטורית אירועים
+                            </button>
+                            </div>
+                        </div> */}
+
+                        <Modal onRequestClose={this.closeEventsHistory}
+
+                            isOpen={this.state.eventsHistory}
+                            onAfterOpen={this.eventsHistory}>
+                            <EventsHistoryModal eventsHistory={this.state.commentsArr} id={this.state.obj._id} />
+                        </Modal>
 
                         <Modal onRequestClose={this.closeModal}
                             style={customStyles}
@@ -605,6 +768,11 @@ export default class EditTodo extends Component {
                             isOpen={this.state.PowerAttorneyIsOpen}>
                             <PowerAttorney state={this.state} id={this.state.obj._id}></PowerAttorney>
                         </Modal>
+                        <Modal onRequestClose={this.closeProcessStatus}
+                            style={customStyles}
+                            isOpen={this.state.processStatus}>
+                            <ProcessStatus state={this.state} id={this.state.obj._id} isOpen={this.state.processStatus}></ProcessStatus>
+                        </Modal>
                         <br></br>
                         <hr></hr>
                         <div className="row">
@@ -620,19 +788,21 @@ export default class EditTodo extends Component {
                             </div>
                         </div>
                         <hr></hr>
-                        <div className="row">
+                        <div className="row ">
                             <div className="col-md-12">
                                 <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
                             </div>
 
                         </div>
-                        <div className="row" id="" style={this.state.showComments == false ? { display: "none" } : { display: "block" }}>
+                        {/* <div className="container"> */}
+                        <div className="row" id="" style={this.state.showComments == false ? { display: "none" } : { display: "block", transition: ' all 0.5s ease-in-out' }}>
                             <div className="col-md-12">
 
                                 {this.commentsList()}
                             </div>
 
                         </div>
+                        {/* </div> */}
                         <hr></hr>
                     </div>
                 </div>
@@ -641,17 +811,18 @@ export default class EditTodo extends Component {
     }
 
     render() {
-
         return (
-            <Switch>
-                <div style={{ direction: "rtl", textAlign: "center", width: '80%', marginRight: '18em' }} className="form-fields">
-                    {
-                        this.customerData()
-                    }
-                </div>
-                <Route path="/docs/:id" exact component={DocsUpload} />
+            <StateProvider>
+                <Switch>
+                    <div style={{ direction: "rtl", textAlign: "center", width: '80%', marginRight: '18em' }} className="form-fields">
+                        {
+                            this.customerData()
+                        }
+                    </div>
+                    <Route path="/docs/:id" exact component={DocsUpload} />
 
-            </Switch>
+                </Switch>
+            </StateProvider>
         )
     }
 }

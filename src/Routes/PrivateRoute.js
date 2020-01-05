@@ -1,11 +1,10 @@
-import React from 'react';
-import { Router, Route, Redirect, Switch } from 'react-router-dom';
+import React, {useContext} from 'react';
+import {Route, Switch } from 'react-router-dom';
 // import createBrowserHistory from "history/createBrowserHistory";
 import EditTodo from "../components/edit-todo.component";
 import CreateTodo from "../components/create-todo.component";
 import DocsUpload from "../components/docs-upload.component";
 import TodoList from "../components/list-todo.component";
-import Sidebar from "../components/sidebar.component";
 
 
 const createBrowserHistory =require("history").createBrowserHistory;
