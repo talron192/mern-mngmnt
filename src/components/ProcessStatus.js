@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Api } from './Api';
 import axios from 'axios';
 import LinearDeterminate from './processBar';
+import Alert from '../../node_modules/react-bootstrap/Alert';
+
 
 
 const StatusList = new Api();
@@ -15,12 +17,14 @@ export default class ProcessStatus extends Component {
             status: { key: '', value: '' },
             statusList: [],
             statusDeleted: false,
-            modalIsOpen:false,
-            modalOpened:true,
+            modalIsOpen: false,
+            modalOpened: true,
+            shoeResMsg: false,
+            responseMsg: '',
 
         }
     }
-    
+
 
     handleStatusClick(e) {
 
@@ -34,7 +38,7 @@ export default class ProcessStatus extends Component {
                 statusList: [...prevState.statusList, status],
                 statusDeleted: false,
                 modalOpened: false,
-                
+
             }))
         } else {
             // console.log(document.getElementById('status_' + e.key));
@@ -54,44 +58,44 @@ export default class ProcessStatus extends Component {
             }
         }
     }
-    
+
     saveStatusProcess = () => {
-        
+
         console.log(this.state.statusList);
 
         axios.post('http://localhost:4000/customers/saveProcessStatus/' + this.props.id,
             this.state.statusList).then(
                 (res) => {
                     console.log(res.data);
-                    
+                    this.setState({ responseMsg: res.data, shoeResMsg: true })
+
                 }
             )
     }
 
     componentDidMount() {
-        console.log('heloo modal id', this.props.isOpen);
         axios.post("http://localhost:4000/customers/getProcessStatus/" + this.props.id, { id: this.props.id })
-        .then(res => { // then print response status
-            console.log(res);
-            this.setState({ statusList: res.data , modalIsOpen:this.props.isOpen });
-        })
-        .catch(err => {
-            console.log(err);
-        });
+            .then(res => { // then print response status
+                this.setState({ statusList: res.data, modalIsOpen: this.props.isOpen });
+            })
+            .catch(err => {
+                console.log(err);
+            });
         this.setState({
             _id: this.props.id
         });
     }
 
-    isExists =(status)=>{
-        for(let obj of this.state.statusList ){
-            if(obj.key == status.key){
-                return true ;
+    isExists = (status) => {
+        for (let obj of this.state.statusList) {
+            if (obj.key == status.key) {
+                return true;
             }
         }
     }
 
     ProccessModal() {
+        const handleDismiss = () => this.setState({ shoeResMsg: false });
 
         return (
             <div style={{ width: '28em' }}>
@@ -123,6 +127,16 @@ export default class ProcessStatus extends Component {
                             </LinearDeterminate>
                         </div>
                     </div> */}
+                    {this.state.shoeResMsg ?
+
+                        <div className="row">
+                            <div className='col-md-12'>
+                                <Alert variant="success" onClose={handleDismiss} dismissible>
+                                    <Alert.Heading>{this.state.responseMsg}</Alert.Heading>
+                                </Alert>
+                            </div>
+                        </div> : ''
+                    }
                     <hr></hr>
                     <div className="row" style={{ textAlign: 'center' }}>
                         <div className="col-md-12">

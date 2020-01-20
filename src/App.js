@@ -78,7 +78,7 @@ class App extends Component {
       );
     }
     return (
-      <div>
+      <div >
         {this.state.authStatus_ ?
           <div>
             <Sidebar

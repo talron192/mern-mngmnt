@@ -56,7 +56,7 @@ class NavBar extends Component {
                 <div className="container-fluid"  >
                         <div>
                             <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                                <strong>ניהול לקוחות</strong>
+                                <strong>ניהול לקוחות</strong> 
 
                                 <ul className="navbar-nav" >
                                     <li className="navbar-item">

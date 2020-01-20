@@ -52,7 +52,7 @@ export default class Sidebar extends Component {
     var sidebar = (
       <Switch>
         <div className="container-fluid" >
-          <h1 style={{textAlign:'center'}}>גל ניהול לקוחות</h1>
+          <h1 style={{textAlign:'center'}}>גל ניהול לקוחות</h1> 
           <hr></hr>
           <div className="row">
             <div className="col-md-2">
@@ -61,6 +61,7 @@ export default class Sidebar extends Component {
                 <br></br>
                 <Link style={{textAlign:'center'}} to="/" onClick={this.routeToDahBord} className="nav-link">רשימת לקוחות</Link>
                 <Link to="/create" style={{textAlign:'center'}} onClick={this.routeChanged} className="nav-link">הוספת לקוח</Link>
+                <Link to="/calandar" style={{textAlign:'center'}} onClick={this.routeChanged} className="nav-link">לוח פגישות</Link>
                 <Link to="/" style={{textAlign:'center'}} className="nav-link" onClick={this.logOut}><strong>התנתק</strong></Link>
               </div>
               <div style={{ direction: 'rtl' }}>

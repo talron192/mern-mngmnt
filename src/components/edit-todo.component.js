@@ -775,13 +775,13 @@ export default class EditTodo extends Component {
                         </Modal>
                         <br></br>
                         <hr></hr>
-                        <div className="row">
-                            <div className="col-md-12">
+                        <div className="row labelList"  >
+                            <div className="col-md-12" >
                                 <label onClick={this.showListFiles} style={{ float: "right", cursor: "pointer" }}> <b> הצגת קבצי לקוח  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
                             </div>
                         </div>
                         <hr></hr>
-                        <div className="row" id="" style={this.state.showListFiles == false ? { display: "none" } : { display: "block" }}>
+                        <div className="row labelList" id=""  style={this.state.showListFiles == false ? { display: "none" } : { display: "block" }} >
                             <div className="col-md-12">
 
                                 {this.filesList()}
@@ -789,7 +789,7 @@ export default class EditTodo extends Component {
                         </div>
                         <hr></hr>
                         <div className="row ">
-                            <div className="col-md-12">
+                            <div className="col-md-12" style={{marginRight:'1em'}}>
                                 <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
                             </div>
 

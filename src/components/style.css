@@ -81,7 +81,7 @@ body{
   background-color: rgb(247, 183, 66);
   border-color: rgb(247, 183, 66);
   border-radius: 1em;
-  margin-left: 45%;
+  margin-left: 31%;
   width: 6em;
   font-weight: bold;
   border: rgb(247, 183, 66);
@@ -93,7 +93,22 @@ body {
   font-family: "Lato", sans-serif;
 }
 
+.labelList{
+  padding-right: 1em;
+}
+
+.calandar{
+  margin-right: 40%;
+  width: 45em;
+  border-radius: 2em;
+  opacity: 0.8;
+  box-shadow: rgb(204, 204, 204) -2px 3px 4px 5px;
+  background-color: aliceblue;
+  color: black;
+  font-size: 21px;
+}
 .sidenav {
+  opacity: 0.8;
   height: 100%;
   width: 0;
   position: fixed;
@@ -876,7 +891,71 @@ html, body {
   align-items: inherit;
   justify-content: inherit;
 } */
+.login100-form-title::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(54,84,99,0.7);
+}
 
+.login100-form-title {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  padding: 70px 15px 74px 15px;
+}
+
+.login100-form-title-1 {
+  font-family: Poppins-Bold;
+  font-size: 30px;
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.container-login100 {
+  width: 100%;  
+  min-height: 100vh;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  /* background: #ebeeef; */
+}
+
+.wrap-login100 {
+  width: 670px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  opacity: 0.8;
+
+}
 
 
 

@@ -12,6 +12,8 @@ const phantompdf = require('phantom-html-to-pdf')();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const rateLimit = require("express-rate-limit");
+const schedule = require('node-schedule');
+
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -61,8 +63,6 @@ Routes.route('/upload/').post(function (req, res) {
 });
 
 Routes.route('/sendEmail/:id').post(function (req, res) {
-    // service =req.body.email.split('@')[1].split('.')[0]; 
-    // console.log('service1',service1);
 
     var transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -78,20 +78,18 @@ Routes.route('/sendEmail/:id').post(function (req, res) {
         text: req.body.content,
         attachments: [
             {   // file on disk as an attachment
-                filename: req.body.templateName+'.pdf',
-                path:`../public/uploads/${req.params.id}/${req.body.templateName}.pdf`
+                filename: req.body.templateName + '.pdf',
+                path: `../public/uploads/${req.params.id}/${req.body.templateName}.pdf`
 
             },
         ]
     };
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-            console.log('$%$%$error');
             console.log(error);
         } else {
             console.log('Email sent: ' + info.response);
-            req.body.templateName == 'PowerAttorney' ? res.json('ייפוי כח נשלח בהצלחה ללקוח') : res.json('קבלה נשלחה למייל') 
-            // res.json('ייפוי כח נשלח בהצלחה ללקוח');
+            req.body.templateName == 'PowerAttorney' ? res.json('ייפוי כח נשלח בהצלחה ללקוח') : res.json('קבלה נשלחה למייל')
         }
     });
 })
@@ -129,11 +127,13 @@ Routes.route('/getListFiles/:id').get(function (req, res) {
     let path = '../public/uploads/' + req.params.id;
     var filesTimeUploaded = [];
     fs.readdir(path, (err, files) => {
-        files.forEach((file) => {
-            filesTimeUploaded.push(getFileTimeUploaded(file, req.params.id));
-        });
-        // filesTimeUploaded.push(files);
-        res.json({ filesTimeUpload: filesTimeUploaded, filesList: files });
+        if (files) {
+
+            files.forEach((file) => {
+                filesTimeUploaded.push(getFileTimeUploaded(file, req.params.id));
+            });
+            res.json({ filesTimeUpload: filesTimeUploaded, filesList: files });
+        } else { res.json('אין קבצים שהועלו') }
     });
 
 });
@@ -202,8 +202,8 @@ const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 1 hour window
     max: 5, // start blocking after 5 requests
     message:
-      "Too many accounts created from this IP, please try again after an hour"
-  });
+        "Too many accounts created from this IP, please try again after an hour"
+});
 
 Routes.route('/signUp').post(async (req, res) => {
 
@@ -222,12 +222,12 @@ Routes.route('/signUp').post(async (req, res) => {
 
 });
 
-Routes.route('/login').post(loginLimiter,async (req, res_) => {
+Routes.route('/login').post(loginLimiter, async (req, res_) => {
     let _id = await Number(req.body.loginDetails._id);
     // LoginDetails.findById(_id, (err, loginDetails) => {
     console.log(req.body);
     LoginDetails.findById(_id).then(loginDetails => {
-        
+
         //  const token =  jwt.sign(
         //     {
         //       userName: loginDetails._id,
@@ -239,7 +239,7 @@ Routes.route('/login').post(loginLimiter,async (req, res_) => {
 
         bcrypt.compare(req.body.loginDetails.password, loginDetails.password).then(res => {
             if (res) {
-                res_.status(200).json({token: 'token'});
+                res_.status(200).json({ token: 'token' });
             } else {
                 console.log('No matched');
                 res_.status(201).json('אחד מהפרטים שהוקלדו שגויים!');
@@ -251,13 +251,13 @@ Routes.route('/login').post(loginLimiter,async (req, res_) => {
     });
 });
 
- Routes.route('/deleteEvent/:id').post(function (req, res) {
+Routes.route('/deleteEvent/:id').post(function (req, res) {
     var customer_id = req.params.id;
     var eventObj = req.body;
     query = { '_id': customer_id },
-    update = {
-        $set: { event: eventObj }
-    },
+        update = {
+            $set: { event: eventObj }
+        },
         options = { upsert: true, useFindAndModify: false };
     Customer.findOneAndUpdate(query, update, options, function (err, data) {
         if (err) {
@@ -324,7 +324,7 @@ Routes.route('/addEvent/:id').post(function (req, res) {
                 res.send('אירוע נוצר בהצלחה!')
             })
             .catch(err => {
-                res.status(400).send('update not possible',err);
+                res.status(400).send('update not possible', err);
             })
         // }
     })
@@ -349,7 +349,7 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
             //      fs.createWriteStream(`../public/uploads/${id}/${templateName}.pdf`);
             //      res.json(`המסמך נשמר בתיקית הלקוח.`);
             // })
-            fs.writeFile(path+`/${templateName}.html`,content_recieptFile,(err,res_)=>{
+            fs.writeFile(path + `/${templateName}.html`, content_recieptFile, (err, res_) => {
                 console.log('done');
                 var options = {
                     format: 'A4',
@@ -362,10 +362,10 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
                         })
                     res.json(`המסמך נשמר בתיקית הלקוח`);
                     //    console.log(file);
-    
+
                     // res.json(`../../public/uploads/${id}/Recipts/ProdReciept.html`);
                 });
-             });
+            });
 
 
         });
@@ -437,11 +437,11 @@ function replaceAll(file, recipetDetails, customer) {
 
 Routes.route('/add').post(function (req, res) {
     let customer = new Customer(req.body);
-    console.log(customer);
-    if ( ! fs.existsSync(`../public/uploads/${customer._id}`) ) {
+    console.log(customer.date.split('-'));
+    if (!fs.existsSync(`../public/uploads/${customer._id}`)) {
         fs.mkdirSync(`../public/uploads/${customer._id}`);
     }
-
+    scheduleMailToBirthDay(customer.date, customer.email);
     let address = req.body.address;
     customer.address = address;
     customer.save()
@@ -450,20 +450,60 @@ Routes.route('/add').post(function (req, res) {
         });
 });
 
+function scheduleMailToBirthDay(birthDate, email) {
+    schedule.scheduleJob(`00 18 ${birthDate.split('-')[2]} ${birthDate.split('-')[1]} *`, function(){
+        let text = "מזל טוב ליום הולדתך עד 120 ,צחי כהן.";
+        console.log('time to send happy birthday to' + email);
+        sendEmail(email,"ברכה קטנה",text);
+      });
+}
+
+function sendEmail(email,subject,text){
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'talglobalron@gmail.com',
+            pass: 'talro1992'
+        }
+    });
+    var mailOptions = {
+        from: 'talglobalron@gmail.com',
+        to: email,
+        subject: subject,
+        text: text,
+        secure: true,
+        // attachments: [
+        //     {   // file on disk as an attachment
+        //         filename: req.body.templateName + '.pdf',
+        //         path: `../public/uploads/${req.params.id}/${req.body.templateName}.pdf`
+
+        //     },
+        // ]
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+            req.body.templateName == 'PowerAttorney' ? res.json('ייפוי כח נשלח בהצלחה ללקוח') : res.json('קבלה נשלחה למייל')
+        }
+    });
+}
+
 Routes.route('/saveProcessStatus/:id').post(function (req, res) {
     var id = req.params.id;
     var processStatus = req.body;
-    console.log('processStatus',processStatus);
-    console.log('id',id);
+    console.log('processStatus', processStatus);
+    console.log('id', id);
     Customer.findById(id, function (err, customer) {
 
-        customer.processStatus = processStatus ;
+        customer.processStatus = processStatus;
         customer.save()
             .then(() => {
                 res.send('נשמר בהצלחה!')
             })
             .catch(err => {
-                res.status(400).send('update not possible',err);
+                res.status(400).send('update not possible', err);
             })
         // }
     })
@@ -471,7 +511,7 @@ Routes.route('/saveProcessStatus/:id').post(function (req, res) {
 
 Routes.route('/getProcessStatus/:id').post(function (req, res) {
     let id = req.params.id;
-    console.log('getProcessStatus id',id);
+    console.log('getProcessStatus id', id);
     Customer.findById(id, function (err, customer) {
         if (err) {
             console.log("error:", err);
