@@ -5,9 +5,6 @@ const router = express.Router();
 // Item Model
 const Customer = require('../../customer.model');
 
-// @route   GET api/items
-// @desc    Get All Items
-// @access  Public
 router.get('/', (req, res) => {
   Customer.find()
     .sort({ date: -1 })

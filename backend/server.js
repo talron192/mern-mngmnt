@@ -8,9 +8,7 @@ const Routes = express.Router();
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const pdf = require('html-pdf');
-const phantompdf = require('phantom-html-to-pdf')();
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const rateLimit = require("express-rate-limit");
 const schedule = require('node-schedule');
 
@@ -330,6 +328,20 @@ Routes.route('/addEvent/:id').post(function (req, res) {
     })
 });
 
+Routes.route('/fileIsExist/:id').post(function (req, res) {
+    console.log('server-fileIsExist', req.body);
+     isExist=false;
+    var path = `../public/uploads/${req.body.customerId}/${req.body.fileName}.pdf`;
+    try {
+        if (fs.existsSync(path)) {
+            isExist=true;
+        }
+        res.json(isExist);
+    } catch (err) {
+        console.error(err)
+    }
+})
+
 Routes.route('/addTemplateFile/:id').post(function (req, res) {
     var id = req.body._id;
     var templateName = req.body.templateName;
@@ -344,11 +356,6 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
             fileToPdf = file;
             if (templateName == 'ProdRecipet') content_recieptFile = replaceAll(file, req.body, customer);
             if (templateName == 'PowerAttorney') content_recieptFile = replaceAllVars(file, req.body, customer);
-            console.log(content_recieptFile);
-            // phantompdf({html:content_recieptFile},function(err,pdf){
-            //      fs.createWriteStream(`../public/uploads/${id}/${templateName}.pdf`);
-            //      res.json(`המסמך נשמר בתיקית הלקוח.`);
-            // })
             fs.writeFile(path + `/${templateName}.html`, content_recieptFile, (err, res_) => {
                 console.log('done');
                 var options = {
@@ -363,7 +370,6 @@ Routes.route('/addTemplateFile/:id').post(function (req, res) {
                     res.json(`המסמך נשמר בתיקית הלקוח`);
                     //    console.log(file);
 
-                    // res.json(`../../public/uploads/${id}/Recipts/ProdReciept.html`);
                 });
             });
 
@@ -451,14 +457,14 @@ Routes.route('/add').post(function (req, res) {
 });
 
 function scheduleMailToBirthDay(birthDate, email) {
-    schedule.scheduleJob(`00 18 ${birthDate.split('-')[2]} ${birthDate.split('-')[1]} *`, function(){
+    schedule.scheduleJob(`00 18 ${birthDate.split('-')[2]} ${birthDate.split('-')[1]} *`, function () {
         let text = "מזל טוב ליום הולדתך עד 120 ,צחי כהן.";
         console.log('time to send happy birthday to' + email);
-        sendEmail(email,"ברכה קטנה",text);
-      });
+        sendEmail(email, "ברכה קטנה", text);
+    });
 }
 
-function sendEmail(email,subject,text){
+function sendEmail(email, subject, text) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {

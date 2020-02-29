@@ -5,20 +5,17 @@ import axios from '../../node_modules/axios';
 import Modal from '../../node_modules/react-modal';
 import ModalHeader from '../../node_modules/react-bootstrap/ModalHeader';
 import ModalBody from '../../node_modules/react-bootstrap/ModalBody';
-import OverlayTrigger from '../../node_modules/react-bootstrap/OverlayTrigger';
-import Popover from '../../node_modules/react-bootstrap/Popover';
+import { getMsg } from '../actions/customerActions';
+import { fileIsExist } from '../actions/customerActions';
+import { connect } from 'react-redux';
+
 import PowerAttorney_template from './PowerAttorney_template';
 import Alert from '../../node_modules/react-bootstrap/Alert';
 
 
 const PaidType = new Api();
 
-// const SendEmailsTemp = new Templates();
-
-
-
-
-export default class PowerAttorney extends Component {
+class PowerAttorney extends Component {
     constructor(props) {
         super(props);
 
@@ -46,7 +43,8 @@ export default class PowerAttorney extends Component {
             emailIsSent: false,
             responseAfterSent: '',
             showPopUp: false,
-            loading: Boolean
+            loading: Boolean,
+            fileIsExist: Boolean
 
 
         }
@@ -71,18 +69,18 @@ export default class PowerAttorney extends Component {
                     <div className="row">
                         <div className="col-md-4">
 
-                            {/* <OverlayTrigger trigger="click"  placement="bottom" overlay={popMsg}> */}
+                            {
                             <button className="btn btn-secondary" onClick={this.onClickHandler}>
                                 {this.state.showPopUp ? <i style={{ width: '6em' }} className="fa fa-check fa-3" aria-hidden="true"></i> : ''}
                                 הפק ייפוי כח
-                                    </button>
+                            </button>}
                             {/* </OverlayTrigger> */}
                         </div>
                         <div className="col-md-4">
-                            <button className="btn btn-secondary" disabled={!this.state.showPopUp} onClick={this.showEmailDetails.bind(this)}>שליחה למייל</button>
+                            <button className="btn btn-secondary" disabled={!this.state.showPopUp && !this.props.fileIsExist} onClick={this.showEmailDetails.bind(this)}>שליחה למייל</button>
                         </div>
                         <div className="col-md-4">
-                            <button className="btn btn-secondary" disabled={!this.state.showPopUp} onClick={this.previewReceipt.bind(this)}>הצגת קבלה</button>
+                            <button className="btn btn-secondary" disabled={!this.state.showPopUp && !this.props.fileIsExist} onClick={this.previewReceipt.bind(this)}>הצגת קבלה</button>
                         </div>
                     </div>
                     {this.state.showMailDetails ?
@@ -241,9 +239,17 @@ export default class PowerAttorney extends Component {
     }
 
     componentDidMount() {
+        this.props.file_IsExist({ customerId: this.props.id, fileName: 'PowerAttorney' });
+        console.log('componentDidMount-props', this.props);
+
         this.setState({
             _id: this.props.id
         });
+    }
+
+    componentWillMount() {
+        console.log('componentWillMount-props', this.props.fileIsExist);
+        // console.log(this.props.file_IsExist({customerId:this.props.id,fileName:'PowerAttorney'})); 
     }
 
     render() {
@@ -252,3 +258,23 @@ export default class PowerAttorney extends Component {
         )
     }
 }
+
+const mapStateToProps = state => {
+    console.log('mapStateToProps', state);
+    // this.setState({
+    //     fileIsExist:state.sitesReducer.fileIsExist
+    // })
+    return {
+        fileIsExist: state.sitesReducer.fileIsExist
+    }
+}
+
+const mapDispatchToProps = disaptch => {
+    return {
+        getCustomer: () => { disaptch(getMsg()); },
+        file_IsExist: (fileData) => { disaptch(fileIsExist(fileData)); }
+
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PowerAttorney);

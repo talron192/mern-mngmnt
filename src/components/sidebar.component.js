@@ -1,6 +1,8 @@
 import React, { Component } from '../../node_modules/react'
-import {Link,Switch } from "../../node_modules/react-router-dom";
+import { Link, Switch } from "../../node_modules/react-router-dom";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import './style.css';
+
 
 export default class Sidebar extends Component {
 
@@ -21,7 +23,7 @@ export default class Sidebar extends Component {
   }
 
   routeToDahBord = () => {
-    console.log('routeToDahBord',this.props);
+    console.log('routeToDahBord', this.props);
 
     this.setState({
       showList: true
@@ -52,17 +54,17 @@ export default class Sidebar extends Component {
     var sidebar = (
       <Switch>
         <div className="container-fluid" >
-          <h1 style={{textAlign:'center'}}>גל ניהול לקוחות</h1> 
+          <h1 style={{ textAlign: 'center' }}>גל ניהול לקוחות</h1>
           <hr></hr>
           <div className="row">
             <div className="col-md-2">
-              <div id="mySidenav" className="sidenav" style={{width:'250px'}}>
+              <div id="mySidenav" className="sidenav" style={{ width: '250px' }}>
                 <a href="javascript:void(0)" className="closebtn" onClick={this.closeNav}>&times;</a>
                 <br></br>
-                <Link style={{textAlign:'center'}} to="/" onClick={this.routeToDahBord} className="nav-link">רשימת לקוחות</Link>
-                <Link to="/create" style={{textAlign:'center'}} onClick={this.routeChanged} className="nav-link">הוספת לקוח</Link>
-                <Link to="/calandar" style={{textAlign:'center'}} onClick={this.routeChanged} className="nav-link">לוח פגישות</Link>
-                <Link to="/" style={{textAlign:'center'}} className="nav-link" onClick={this.logOut}><strong>התנתק</strong></Link>
+                <Link style={{ textAlign: 'center' }} to="/" onClick={this.routeToDahBord} className="nav-link">רשימת לקוחות</Link>
+                <Link to="/create" style={{ textAlign: 'center' }} onClick={this.routeChanged} className="nav-link">הוספת לקוח</Link>
+                <Link to="/calandar" style={{ textAlign: 'center' }} onClick={this.routeChanged} className="nav-link">לוח פגישות</Link>
+                <Link to="/" style={{ textAlign: 'center' }} className="nav-link" onClick={this.logOut}><strong>התנתק</strong></Link>
               </div>
               <div style={{ direction: 'rtl' }}>
                 <span style={{ fontSize: '30px', cursor: 'pointer', float: 'right' }} onClick={this.openNav}>&#9776;</span>
@@ -72,6 +74,7 @@ export default class Sidebar extends Component {
           </div>
         </div>
       </Switch>
+
 
 
 

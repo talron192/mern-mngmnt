@@ -1,11 +1,12 @@
 
 import React, { Component } from 'react';
-import {Route, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import Login from "./components/login.component";
 import SignUp from "./components/signUp.component";
 import Sidebar from "./components/sidebar.component";
-import AuthHelperMethods  from "./components/AuthHelperMethods";
+import AuthHelperMethods from "./components/AuthHelperMethods";
 import PrivateRoute from "./Routes/PrivateRoute";
+
 
 
 
@@ -24,7 +25,7 @@ class App extends Component {
 
   loginHandler = (authData) => {
     console.log(authData);
-    
+
     this.setState({
       authStatus_: authData.authStatus,
       authData: authData
@@ -41,30 +42,29 @@ class App extends Component {
 
   render() {
     let routes = (
-      <Switch>
-        <Route
-          path="/"
-          exact
-          render={props => (
-            <Login
-              {...props}
-              onLogin={this.loginHandler}
-            // loading={this.state.authLoading}
-            />
-          )}
-        />
-        <Route
-          path="/signUp"
-          exact
-          render={props => (
-            <SignUp
-              {...props}
-            // loading={this.state.authLoading}
-            />
-          )}
-        />
-        <Redirect to="/signUp" />
-      </Switch>
+        <Switch>
+          <Route
+            path="/"
+            exact
+            render={props => (
+              <Login
+                {...props}
+                onLogin={this.loginHandler}
+              // loading={this.state.authLoading}
+              />
+            )}
+          />
+          <Route
+            path="/signUp"
+            render={props => (
+              <SignUp
+                {...props}
+              // loading={this.state.authLoading}
+              />
+            )}
+          />
+          <Redirect to="/signUp" />
+        </Switch>
     )
     if (this.state.authStatus_) {
       routes = (

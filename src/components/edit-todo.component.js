@@ -1,4 +1,11 @@
-import React, { Component, useContext } from '../../node_modules/react';
+import React, { Component, useState, useContext } from '../../node_modules/react';
+import { connect } from 'react-redux';
+
+import { getCustomerData } from '../actions/customerActions';
+import { changeMsg } from '../actions/customerActions';
+import { fileIsExist } from '../actions/customerActions';
+
+
 import axios from '../../node_modules/axios';
 import { Datatable } from "../../node_modules/@o2xp/react-datatable";
 import { Link, Route, Switch } from '../../node_modules/react-router-dom';
@@ -9,7 +16,6 @@ import EventsHistoryModal from './EventsHistoryModal';
 import ProductionReceipt from './ProductionReceipt';
 import PowerAttorney from './PowerAttorney';
 import ProcessStatus from './ProcessStatus';
-import { StateProvider } from "./stateContext";
 
 // import EventsTable from './EventsTable';
 import $ from '../../node_modules/jquery';
@@ -95,8 +101,7 @@ $(document).on('click', '.btn_cancel', function (event) {
     });
 });
 //--->button > cancel > end
-
-export default class EditTodo extends Component {
+class EditTodo extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -155,9 +160,8 @@ export default class EditTodo extends Component {
         });
     }
     openPowerAttorney() {
-        // const State = useContext(StateProvider);
-
-        // console.log('State', State);
+        // this.props.file_IsExist({ customerId: this.props.id, fileName: 'PowerAttorney' });
+        console.log('openPowerAttorney', this.props);
 
         this.setState({
             PowerAttorneyIsOpen: true,
@@ -226,9 +230,7 @@ export default class EditTodo extends Component {
     getListFiles() {
         axios.get("http://localhost:4000/customers/getListFiles/" + this.props.match.params.id, { id: this.props.match.params.id })
             .then(res => { // then print response status
-                console.log(res);
                 var filesList = this.mergeFilesListAndTimeUpload(res.data.filesList, res.data.filesTimeUpload);
-                console.log('filesList', filesList);
                 this.setState({ listOfFiles: filesList });
             })
             .catch(err => {
@@ -239,7 +241,6 @@ export default class EditTodo extends Component {
     getComments() {
         axios.get("http://localhost:4000/customers/getComments/" + this.props.match.params.id, { id: this.props.match.params.id })
             .then(res => { // then print response status
-                console.log(res.data);
                 this.setState({ commentsArr: this.ignoreBreakRows(res.data) });
                 // this.setState({ commentsArr: res.data });
                 $(document).find('.btn_save').hide();
@@ -382,7 +383,6 @@ export default class EditTodo extends Component {
             editableEvent.eventID = btn_id;
 
         }
-        console.log('buildEditableEventObj', editableEvent);
         return this.ignoreBreakRowsForObject(editableEvent, editableEvent.details);
 
     }
@@ -440,7 +440,6 @@ export default class EditTodo extends Component {
         let editableEvent = this.buildEditableEventObj(row_data, btn_id);
         let arrOfEvents = this.state.commentsArr;
         this.deleteEvent(this.state.commentsArr);
-        console.log(this.state.commentsArr)
 
         for (let i in arrOfEvents) {
 
@@ -454,7 +453,6 @@ export default class EditTodo extends Component {
     }
 
     deleteEvent(editableEvent) {
-        console.log(this.state._id);
         axios.post('http://localhost:4000/customers/deleteEvent/' + this.state._id, editableEvent)
             .then(res => {
                 console.log('after then response', res.data);
@@ -477,7 +475,6 @@ export default class EditTodo extends Component {
     }
 
     uploadEvent(editableEvent) {
-        console.log('uploadEvent', editableEvent);
         axios.post('http://localhost:4000/customers/uploadEvent/' + this.state._id, editableEvent)
             .then(res => {
                 console.log('after then response', res.data);
@@ -595,10 +592,16 @@ export default class EditTodo extends Component {
         return eventsArray;
     }
 
+    componentWillMount() {
+    }
+
     componentDidMount() {
+
         axios.get("http://localhost:4000/customers/getId/" + this.props.match.params.id, { id: this.props.match.params.id })
             .then(res => { // then print response status
                 this.setState({ obj: res.data });
+                this.props.file_IsExist({ customerId: this.props.match.params.id, fileName: 'PowerAttorney' });
+
                 if (res.data && res.data.event) {
                     this.setState({ commentsArr: this.ignoreBreakRows(res.data.event) });
 
@@ -607,6 +610,7 @@ export default class EditTodo extends Component {
             }).then(
 
                 this.success = true,
+
             )
             .catch(err => {
                 console.log(err);
@@ -781,7 +785,7 @@ export default class EditTodo extends Component {
                             </div>
                         </div>
                         <hr></hr>
-                        <div className="row labelList" id=""  style={this.state.showListFiles == false ? { display: "none" } : { display: "block" }} >
+                        <div className="row labelList" id="" style={this.state.showListFiles == false ? { display: "none" } : { display: "block" }} >
                             <div className="col-md-12">
 
                                 {this.filesList()}
@@ -789,7 +793,7 @@ export default class EditTodo extends Component {
                         </div>
                         <hr></hr>
                         <div className="row ">
-                            <div className="col-md-12" style={{marginRight:'1em'}}>
+                            <div className="col-md-12" style={{ marginRight: '1em' }}>
                                 <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
                             </div>
 
@@ -811,21 +815,34 @@ export default class EditTodo extends Component {
     }
 
     render() {
-        return (
-            <StateProvider>
-                <Switch>
-                    <div style={{ direction: "rtl", textAlign: "center", width: '80%', marginRight: '18em' }} className="form-fields">
-                        {
-                            this.customerData()
-                        }
-                    </div>
-                    <Route path="/docs/:id" exact component={DocsUpload} />
 
-                </Switch>
-            </StateProvider>
+        return (
+            <Switch>
+                <div style={{ direction: "rtl", textAlign: "center", width: '80%', marginRight: '18em' }} className="form-fields">
+                    {
+                        this.customerData()
+                    }
+                </div>
+                <Route path="/docs/:id" exact component={DocsUpload} />
+
+            </Switch>
         )
     }
 }
 
-// export default withRouter(Sidebar);
+const mapStateToProps = state => {
+    return {
+        fileIsExist: state.sitesReducer.fileIsExist
 
+    }
+}
+
+const mapDispatchToProps = disaptch => {
+    return {
+        file_IsExist: (fileData) => { disaptch(fileIsExist(fileData)); }
+
+
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditTodo);

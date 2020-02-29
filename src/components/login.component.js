@@ -91,8 +91,8 @@ class Login extends Component {
                 this.props.onLogin(loginDetails);
             })
             .catch(function (err) {
-                if (err) alert("נסיונות החיבור נכשלו, נסה שנית מאוחר יותר");
-                // console.log('error', err.message);
+                // if (err) alert("נסיונות החיבור נכשלו, נסה שנית מאוחר יותר");
+                console.log('error', err.message);
             })
     }
 
