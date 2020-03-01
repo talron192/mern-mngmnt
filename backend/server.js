@@ -15,8 +15,9 @@ const schedule = require('node-schedule');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+const url = 'mongodb+srv://talGlobalRon:4jqSIpibugSJp9AO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
 // const url = 'mongodb+srv://talGlobalRon:rXZL7HbEaAZw03tO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
-var url = 'mongodb://127.0.0.1:27017/customers';
+// var url = 'mongodb://127.0.0.1:27017/customers';
 
 const port = process.env.MONGODB_URI || PORT;
 
