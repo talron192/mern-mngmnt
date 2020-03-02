@@ -405,8 +405,8 @@ function replaceAllVars(file, details, customer) {
     var mapObj = {
         contactName: customer.fullName,
         tz: customer._id,
-        busNAME: customer.fullName,
-        numHp: customer._id
+        busNAME: "מידע צחי",
+        numHp: "מידע צחי"
     }
     file = file.replace(/contactName|tz|busNAME|numHp/gi, function (matched) {
         return mapObj[matched];
@@ -416,18 +416,27 @@ function replaceAllVars(file, details, customer) {
 
 function replaceAll(file, recipetDetails, customer) {
     // console.log(customer.phoneNumber);
-
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    
+    var yyyy = today.getFullYear();
+    var today = dd + '/' + mm + '/' + yyyy;
     var mapObj = {
 
-        AgentAddress: customer.address.houseAddress,
+        AgentAddress: 'מידע צחי',
+        houseAddress: customer.address.houseAddress ? customer.address.houseAddress : '',
         AgentFax: 'מידע צחי',
-        AgentEmail: customer.email,
-        ContactName: customer.fullName,
-        Customer_name: customer.fullName,
-        Phone_number: customer.phoneNumber,
-        ActionType: customer.actionType,
-        RecipetDate: '25/04/1992',
-        Description: recipetDetails.description,
+        AgentEmail: customer.email ? customer.email : '' ,
+        ContactName: customer.fullName ? customer.fullName : '',
+        Customer_name: customer.fullName ? customer.fullName : '',
+        Phone_number: customer.phoneNumber ?customer.phoneNumber : '',
+        ActionType: customer.actionType ? customer.actionType.split('-')[1] : '',
+        Email: customer.email ? customer.email : '',
+        RecipetDate: today,
+        ReciepDate: today,
+        Fax: customer.fax,
+        Description: recipetDetails.description ,
         PerHour: '-------',
         CountHours: '--------',
         FixedPayment: recipetDetails.priceBeforeVAT,
@@ -435,7 +444,7 @@ function replaceAll(file, recipetDetails, customer) {
         TotalPrice: recipetDetails.priceAfterDiscount
     }
 
-    file = file.replace(/AgentAddress|AgentFax|AgentEmail|ContactName|Customer_name|Phone_number|ActionType|RecipetDate|Description|PerHour|CountHours|FixedPayment|Discount|TotalPrice/gi, function (matched) {
+    file = file.replace(/AgentAddress|ReciepDate|Email|AgentFax|Fax|AgentEmail|ContactName|Customer_name|Phone_number|ActionType|RecipetDate|Description|PerHour|CountHours|FixedPayment|Discount|TotalPrice/gi, function (matched) {
         return mapObj[matched];
     });
     return file;
