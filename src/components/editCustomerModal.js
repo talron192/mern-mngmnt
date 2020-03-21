@@ -188,6 +188,7 @@ class EditCustomerModal extends Component {
             <input className="form-control form-control-lg" id="matiralStatus" onChange={this.handleChange.bind(this)} placeholder={this.props.customer.matiralStatus} />
           </div>
         </div>
+        
         <div className="form-group row">
           <label htmlFor="colFormLabelLg" className="col-sm-2 col-form-label col-form-label-lg">גיל</label>
           <div className="col-sm-4">
