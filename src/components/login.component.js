@@ -107,7 +107,7 @@ class Login extends Component {
                             <div className="wrap-login100">
                                 <div className="login100-form-title" style={{ backgroundImage: "url(" + bg + ")" }} >
                                     <span className="login100-form-title-1">
-                                        -tesfsdfsdtכניסה למערכת
+                                        -te sfsdfsdtכניסה למערכת
 					                </span>
                                 </div>
                                 <br></br>
