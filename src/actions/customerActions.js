@@ -32,6 +32,23 @@ export const getMsg = (msg) => {
     }
 }
 
+export const getState=(state)=>{
+    return async (dispatch)=>{
+        return dispatch({
+            type:'GET_CUSTOMER_DATA',
+        })
+    }
+}
+
+export const eventISDone=(eventStatus)=>{
+    return async (dispatch)=>{
+        return dispatch({
+            type:'EVENT_IS_DONE',
+            payload:eventStatus
+        })
+    }
+}
+
 export const fileIsExist=(fileData)=>{
     return async (dispatch)=>{
 

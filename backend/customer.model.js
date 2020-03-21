@@ -50,6 +50,11 @@ let Customer= new Shema({
     status:{
         type:String
     },
+    anotherContact:{
+        type:{},
+        ref:'anotherContact'
+        
+    },
     address:{
         type:{},
         ref:'address'

@@ -39,9 +39,15 @@ export default class CreateTodo extends Component {
             matiralStatus: '',
             sourceArrival: '',
             customerType: '',
+            otherContactFullName: '',
+            otherContactId: '',
+            otherContactDate: '',
             toNextStep: false,
             changeStyle: false,
-            isMortgageAdvice: false
+            isMortgageAdvice: false,
+            addMoreContactClicked: false,
+            failId: false,
+            failsIdMsg: ''
 
             //isCompleted:false
         }
@@ -60,6 +66,7 @@ export default class CreateTodo extends Component {
         console.log(e.target.id);
         console.log(e.target.value);
         if (e.target.id == '_id') {
+
             this.setState({
                 changeStyle: false
             })
@@ -108,10 +115,29 @@ export default class CreateTodo extends Component {
         this.setState({ address });
     }
 
+    addMoreContact = () => {
+        this.setState({ addMoreContactClicked: true });
+    }
+
+    cancelMoreContact = () => {
+        this.setState({ addMoreContactClicked: false });
+    }
+
     handleSubmit = (e) => {
+        let pattern = new RegExp("^\\d{9}$");
+        if(!pattern.test(this.state._id)){
+            console.log('fail id');
+            this.setState({
+                failId:true,
+                failsIdMsg:'חובה 9 ספרות'
+            })
+            return;
+        }
         if (this.state._id == '' || this.state.actionType == '' || this.state.email == '') {
             this.setState({
                 toNextStep: false,
+                failId:true,
+                failsIdMsg:'',
                 changeStyle: true
             });
             return;
@@ -121,6 +147,7 @@ export default class CreateTodo extends Component {
                 changeStyle: false
             });
         }
+
         const newCustomer = {
             fullName: this.state.fullName,
             email: this.state.email,
@@ -138,6 +165,11 @@ export default class CreateTodo extends Component {
             matiralStatus: this.state.matiralStatus,
             sourceArrival: this.state.sourceArrival,
             customerType: this.state.customerType,
+            anotherContact:{
+                otherContactFullName: this.state.otherContactFullName,
+                otherContactId: this.state.otherContactId,
+                otherContactDate: this.state.otherContactDate
+            },
             address: {
                 houseAddress: this.state.address.houseAddress,
                 city: this.state.address.city,
@@ -180,10 +212,11 @@ export default class CreateTodo extends Component {
                         <input className="form-control" style={this.state.changeStyle == false && this.state._id == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="number" onChange={this.handleChange.bind(this)}
                             id="_id" placeholder="ת.ז"></input>
                         {this.state.changeStyle == true && this.state._id == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
+                        {this.state.failId ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>{this.state.failsIdMsg}</label> : null}
                     </div>
                     <div className="col-md-4">
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="date" onChange={this.handleChange.bind(this)}
-                            id="date" placeholder="תאריך לידה"></input>
+                            id="date" title="תאריך לידה"></input>
                     </div>
                 </div>
                 <hr></hr>
@@ -196,7 +229,7 @@ export default class CreateTodo extends Component {
                     </div>
                     <div className="col-md-4">
                         <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="date" onChange={this.handleChange.bind(this)}
-                            id="issueDate" placeholder="תאריך הנפקת תעודת זהות"></input>
+                            id="issueDate" title="תאריך הנפקת תעודת זהות"></input>
                     </div>
                     <div style={{ marginTop: '-1em', marginLeft: '9em', marginRight: '5em' }}
                         className="col=md-2"
@@ -271,7 +304,7 @@ export default class CreateTodo extends Component {
 
                         <div className="col=md-4" style={{ marginRight: "1em" }}>
                             <select style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} style={this.state.changeStyle == false && this.state.actionType == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} id="MortgageAdviceType"
-                                onChange={this.handleChange.bind(this)} className="drop-down" style={{textIndent: '0em'}}>
+                                onChange={this.handleChange.bind(this)} className="drop-down" style={{ textIndent: '0em' }}>
                                 <option style={{ backgroundColor: "lightgrey" }}>סוג משכנתא</option>
                                 {MortgageAadviceList.GetMortgageAadviceList().map((type) => <option key={type.key} value={type.value}>{type.value}</option>)}
                             </select>
@@ -296,10 +329,49 @@ export default class CreateTodo extends Component {
                             id="sourceArrival" placeholder="מקור הגעה"></input>
                     </div> */}
                 </div>
+                <br />
+               {!this.state.addMoreContactClicked ? <div className="row">
+                    <div style={{ textAlign: 'center' }} className="col-md-12">
+                        <i style={{ fontSize: '2em', color: '#f7b742', cursor: 'pointer' }} onClick={this.addMoreContact.bind(this)} className="fa fa-plus-circle fa-2" aria-hidden="true"></i>
+                    </div>
+                </div> : ''}
+                <hr></hr>
+                {
+                    this.state.addMoreContactClicked ?
+                        <div>
+                            <h5 style={{textAlign:'center'}}><u>איש קשר נוסף</u></h5>
+                            <br/>
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="text" id="otherContactFullName"
+                                        onChange={this.handleChange.bind(this)} placeholder="שם מלא"></input>
+                                </div>
+                                <div className="col-md-4">
+                                    <input className="form-control" style={this.state.changeStyle == false && this.state._id == '' ? { boxShadow: '-1px 2px 4px 2px #ccc' } : { boxShadow: ' -1px 2px 4px 2px red' }} type="number" onChange={this.handleChange.bind(this)}
+                                        id="otherContactId" placeholder="ת.ז"></input>
+                                    {this.state.changeStyle == true && this.state._id == '' ? <label style={{ float: 'right', color: 'red', fontWeight: '700' }}>חובה</label> : null}
+                                </div>
+                                <div className="col-md-4">
+                                    <input className="form-control" style={{ boxShadow: '-1px 2px 4px 2px #ccc' }} type="date" onChange={this.handleChange.bind(this)}
+                                        id="otherContactDate" title="תאריך לידה"></input>
+                                </div>
+                            </div>
+                            <br/>
+                            <div className="row">
+                                <div className="col-md-12" style={{ textAlign: 'center' }}>
+                                    <i style={{ fontSize: '2em', color: '#f7b742', cursor: 'pointer' }} onClick={this.cancelMoreContact.bind(this)} className="fa fa-minus-circle" aria-hidden="true"></i>
+
+                                </div>
+                            </div>
+                        </div> : ''
+
+
+
+                }
                 <hr></hr>
 
                 <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-12" style={{ textAlign: 'center' }}>
                         <button className="btn btn-secondary" style={{ borderRadius: '1em', borderColor: '#f7b742', backgroundColor: '#f7b742', 'width': '10em', 'fontWeight': 'bold' }}
                             onClick={this.handleSubmit.bind(this)} >
                             <Link style={{ color: 'black', textDecoration: 'none' }} to={this.state.toNextStep == true ? "/docs/" + this.state._id : "/create/"}>שמור והמשך</Link>

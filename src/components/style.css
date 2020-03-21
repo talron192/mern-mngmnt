@@ -9252,6 +9252,10 @@ a[data-toggle="collapse"] {
     background-color: red
   }
 
+  .react-calendar{
+    width: 100% !important ;
+    margin:0;
+  }
 
 
 

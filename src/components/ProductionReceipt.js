@@ -35,8 +35,8 @@ export default class ProductionReceipt extends Component {
             RecieptContent: '',
             totalPricePerHour: '',
             totalPriceAfterDiscount: '',
-            showMailDetails:false,
-            loading:Boolean,
+            showMailDetails: false,
+            loading: Boolean,
             subject: '',
             emailContent: '',
             emailIsSent: false,
@@ -133,41 +133,41 @@ export default class ProductionReceipt extends Component {
                                 </div>
                                 : ''
                         }
-                         {this.state.showMailDetails ?
-                        <div>
-                            <div className="row">
-
-                                <div className="col-md-12" style={{ paddingTop: '1em' }}>
-                                    <input type="text" onChange={this.handleChange.bind(this)} style={{ border: '0', borderBottom: '1px solid grey' }} className="form-control" placeholder="נושא" aria-label="Example text with button addon" aria-describedby="button-addon1" id="subject"></input>
-                                </div>
-                            </div>
-                            <div className="row">
-
-                                <div className="col-md-12" >
-
-                                    <div className="input-group mb-3" style={{ paddingTop: '2em' }} >
-                                        <div className="input-group-prepend" >
-                                            <button className="btn btn-outline-secondary" type="button" disabled={this.isDisabled()} onClick={this.sendToEmail.bind(this)}>
-                                                {this.isDisabled() && <i className="fa fa-refresh fa-spin"></i>}
-                                                שלח
-                                                </button>
-                                        </div>
-                                        <input id="emailContent" type="text" className="form-control" onChange={this.handleChange.bind(this)} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" ></input>
-                                    </div>
-                                </div>
-                            </div>
-                            {this.state.emailIsSent ?
-
+                        {this.state.showMailDetails ?
+                            <div>
                                 <div className="row">
-                                    <div className='col-md-12'>
-                                        <Alert variant="success" onClose={handleDismiss} dismissible>
-                                            <Alert.Heading>{this.state.responseAfterSent}</Alert.Heading>
-                                        </Alert>
+
+                                    <div className="col-md-12" style={{ paddingTop: '1em' }}>
+                                        <input type="text" onChange={this.handleChange.bind(this)} style={{ border: '0', borderBottom: '1px solid grey' }} className="form-control" placeholder="נושא" aria-label="Example text with button addon" aria-describedby="button-addon1" id="subject"></input>
                                     </div>
-                                </div> : ''
-                            }
-                        </div>
-                        : ''}
+                                </div>
+                                <div className="row">
+
+                                    <div className="col-md-12" >
+
+                                        <div className="input-group mb-3" style={{ paddingTop: '2em' }} >
+                                            <div className="input-group-prepend" >
+                                                <button className="btn btn-outline-secondary" type="button" disabled={this.isDisabled()} onClick={this.sendToEmail.bind(this)}>
+                                                    {this.isDisabled() && <i className="fa fa-refresh fa-spin"></i>}
+                                                    שלח
+                                                </button>
+                                            </div>
+                                            <input id="emailContent" type="text" className="form-control" onChange={this.handleChange.bind(this)} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" ></input>
+                                        </div>
+                                    </div>
+                                </div>
+                                {this.state.emailIsSent ?
+
+                                    <div className="row">
+                                        <div className='col-md-12'>
+                                            <Alert variant="success" onClose={handleDismiss} dismissible>
+                                                <Alert.Heading>{this.state.responseAfterSent}</Alert.Heading>
+                                            </Alert>
+                                        </div>
+                                    </div> : ''
+                                }
+                            </div>
+                            : ''}
 
                     </div>
                 </div>
@@ -235,43 +235,43 @@ export default class ProductionReceipt extends Component {
             let pricePerHour = document.getElementById('pricePerHour').value;
             let hourCount = document.getElementById('hourCount').value;
             this.setState({ totalPricePerHour: pricePerHour * hourCount });
-            setTimeout(()=>{
+            setTimeout(() => {
                 if (this.state.discountHour) {
                     this.setState({ totalPriceAfterDiscount: this.state.totalPricePerHour - (this.state.totalPricePerHour * (this.state.discountHour / 100)) })
                 }
             })
         }
-            setTimeout(() => {
+        setTimeout(() => {
 
-                const newReceipt = {
-                    totalPricePerHour: this.state.totalPricePerHour,
-                    totalPriceAfterDiscount:this.state.totalPriceAfterDiscount,
-                    priceBeforeVAT: this.state.priceBeforeVAT,
-                    description: this.state.description,
-                    discount: this.state.discount,
-                    paidType: this.state.paidType,
-                    priceAfterDiscount: this.state.priceAfterDiscount,
-                    hourCount: this.state.hourCount,
-                    pricePerHour: this.state.pricePerHour,
-                    discountHour: this.state.discountHour,
-                    eventID: Math.random(),
-                    _id: this.state._id,
-                    templateName: 'ProdRecipet'
-                };
-                console.log('newReceipt', newReceipt);
-                // axios.post('http://localhost:4000/customers/addReceipt/' + this.state._id, newReceipt)
-                axios.post('http://localhost:4000/customers/addTemplateFile/' + this.state._id, newReceipt)
-                    .then(res => {
-                        this.setState({
-                            msgEvent: res.data,
-                            showReciept: true,
-                        })
+            const newReceipt = {
+                totalPricePerHour: this.state.totalPricePerHour,
+                totalPriceAfterDiscount: this.state.totalPriceAfterDiscount,
+                priceBeforeVAT: this.state.priceBeforeVAT,
+                description: this.state.description,
+                discount: this.state.discount,
+                paidType: this.state.paidType,
+                priceAfterDiscount: this.state.priceAfterDiscount,
+                hourCount: this.state.hourCount,
+                pricePerHour: this.state.pricePerHour,
+                discountHour: this.state.discountHour,
+                eventID: Math.random(),
+                _id: this.state._id,
+                templateName: 'ProdRecipet'
+            };
+            console.log('newReceipt', newReceipt);
+            // axios.post('http://localhost:4000/customers/addReceipt/' + this.state._id, newReceipt)
+            axios.post('http://localhost:4000/customers/addTemplateFile/' + this.state._id, newReceipt)
+                .then(res => {
+                    this.setState({
+                        msgEvent: res.data,
+                        showReciept: true,
                     })
-                    .catch(err => {
-                        console.log(err);
-                    });
-            })
-        
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        })
+
 
     }
 
@@ -291,16 +291,16 @@ export default class ProductionReceipt extends Component {
 
     }
     handleTypeChange = (e) => {
-        this.setState({showReciept:false});
+        this.setState({ showReciept: false });
         if (e.target.value == 1) {
             this.setState({
                 [e.target.id]: e.target.value,
                 isDetailsPerHours: true,
                 isDetailsPaymentFixed: false,
-                showMailDetails:false,
-                priceBeforeVAT:'',
-                discount:'',
-                priceAfterDiscount:''
+                showMailDetails: false,
+                priceBeforeVAT: '',
+                discount: '',
+                priceAfterDiscount: ''
 
 
             });
@@ -310,12 +310,12 @@ export default class ProductionReceipt extends Component {
                 [e.target.id]: e.target.value,
                 isDetailsPaymentFixed: true,
                 isDetailsPerHours: false,
-                showMailDetails:false,
-                pricePerHour:'',
-                hourCount:'',
-                discountHour:'',
-                totalPriceAfterDiscount:'',
-                totalPricePerHour:''
+                showMailDetails: false,
+                pricePerHour: '',
+                hourCount: '',
+                discountHour: '',
+                totalPriceAfterDiscount: '',
+                totalPricePerHour: ''
 
             });
         }
@@ -334,6 +334,15 @@ export default class ProductionReceipt extends Component {
                 priceAfterDiscount: priceBeforeVAT - (priceBeforeVAT * discount),
                 showPriceAfterDiscount: true
             });
+        } else if (document.getElementById('priceBeforeVAT')
+                    && document.getElementById('priceBeforeVAT').value != "") {
+                        this.setState({
+                            discount:'',
+                            priceBeforeVAT: document.getElementById('priceBeforeVAT').value,
+                            priceAfterDiscount: document.getElementById('priceBeforeVAT').value,
+                            showPriceAfterDiscount: true
+                        });
+
         }
     }
 

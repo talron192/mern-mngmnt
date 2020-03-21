@@ -28,7 +28,7 @@ export default class EditTodo extends Component {
         if(! this.state.selectedFile) {
             this.setState({
                 show:true,
-                msg:'יש להעלות ממסך' 
+                msg:'יש להעלות מסמך' 
             })
             return;
         }

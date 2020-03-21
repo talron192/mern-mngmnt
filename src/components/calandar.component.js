@@ -31,10 +31,14 @@ export default class Calandar extends Component {
   hoverDay = day => {
     console.log('hover', day);
   }
+  closeEventsHistory =()=>{
+    this.setState({ModalIsOpen:false});
+
+  }
   render() {
     return (
       <div>
-        <Calendar className={['calandar']}
+        <Calendar  className={['calandar']}
           onChange={this.onChange}
           value={this.state.date}
           onClickDay={this.onClickDay}

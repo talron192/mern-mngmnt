@@ -15,9 +15,9 @@ const schedule = require('node-schedule');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-const url = 'mongodb+srv://talGlobalRon:4jqSIpibugSJp9AO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
+// const url = 'mongodb+srv://talGlobalRon:4jqSIpibugSJp9AO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
 // const url = 'mongodb+srv://talGlobalRon:rXZL7HbEaAZw03tO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
-// var url = 'mongodb://127.0.0.1:27017/customers';
+var url = 'mongodb://127.0.0.1:27017/customers';
 
 const port = process.env.MONGODB_URI || PORT;
 
@@ -331,11 +331,11 @@ Routes.route('/addEvent/:id').post(function (req, res) {
 
 Routes.route('/fileIsExist/:id').post(function (req, res) {
     console.log('server-fileIsExist', req.body);
-     isExist=false;
+    isExist = false;
     var path = `../public/uploads/${req.body.customerId}/${req.body.fileName}.pdf`;
     try {
         if (fs.existsSync(path)) {
-            isExist=true;
+            isExist = true;
         }
         res.json(isExist);
     } catch (err) {
@@ -419,7 +419,7 @@ function replaceAll(file, recipetDetails, customer) {
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth() + 1; //January is 0!
-    
+
     var yyyy = today.getFullYear();
     var today = dd + '/' + mm + '/' + yyyy;
     var mapObj = {
@@ -427,16 +427,16 @@ function replaceAll(file, recipetDetails, customer) {
         AgentAddress: 'מידע צחי',
         houseAddress: customer.address.houseAddress ? customer.address.houseAddress : '',
         AgentFax: 'מידע צחי',
-        AgentEmail: customer.email ? customer.email : '' ,
+        AgentEmail: customer.email ? customer.email : '',
         ContactName: customer.fullName ? customer.fullName : '',
         Customer_name: customer.fullName ? customer.fullName : '',
-        Phone_number: customer.phoneNumber ?customer.phoneNumber : '',
+        Phone_number: customer.phoneNumber ? customer.phoneNumber : '',
         ActionType: customer.actionType ? customer.actionType.split('-')[1] : '',
         Email: customer.email ? customer.email : '',
         RecipetDate: today,
         ReciepDate: today,
         Fax: customer.fax,
-        Description: recipetDetails.description ,
+        Description: recipetDetails.description,
         PerHour: '-------',
         CountHours: '--------',
         FixedPayment: recipetDetails.priceBeforeVAT,
@@ -467,7 +467,7 @@ Routes.route('/add').post(function (req, res) {
 });
 
 function scheduleMailToBirthDay(birthDate, email) {
-    schedule.scheduleJob(`00 18 ${birthDate.split('-')[2]} ${birthDate.split('-')[1]} *`, function () {
+    schedule.scheduleJob(`05 18 ${birthDate.split('-')[2]} ${birthDate.split('-')[1]} *`, function () {
         let text = "מזל טוב ליום הולדתך עד 120 ,צחי כהן.";
         console.log('time to send happy birthday to' + email);
         sendEmail(email, "ברכה קטנה", text);
@@ -506,6 +506,37 @@ function sendEmail(email, subject, text) {
     });
 }
 
+Routes.route('/updateCustomer/:id').post(function (req, res) {
+    var customer_id = req.params.id;
+    let objData = req.body;
+    console.log('id', customer_id);
+    let propsToUpdate = [];
+    let obj={};
+    for(let key in objData ){
+        console.log('key',key);
+        if(key !== 'address'){
+            obj[key]=objData[key];
+            propsToUpdate.push({$set :obj});
+        }
+    }
+    console.log('objData', objData);
+
+    query = { '_id': customer_id },
+        update = {
+            $set: objData
+        },
+        options = { upsert: true,useFindAndModify:false };
+    Customer.findOneAndUpdate(query, update, options, function (err, data) {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (!data) {
+            return res.status(404).end();
+        }
+        return res.status(200).send(data);
+    });
+});
+
 Routes.route('/saveProcessStatus/:id').post(function (req, res) {
     var id = req.params.id;
     var processStatus = req.body;
@@ -536,6 +567,28 @@ Routes.route('/getProcessStatus/:id').post(function (req, res) {
 
         }
     });
+});
+
+Routes.route('/deleteFile/:id').post(async function (req, res) {
+    let id = req.params.id;
+    console.log('getProcessStatus------:::::::::::::::::::------id', id);
+    console.log('req.params', req.body);
+    let path = '../public/uploads/' + req.params.id;
+    let filesTimeUploaded = [];
+
+    await fs.unlink(req.body.filePath, async function (res_){
+        // console.log('res------------',res);
+        await fs.readdir(path, (err, files) => {
+            if (files) {
+    
+                files.forEach((file) => {
+                    filesTimeUploaded.push(getFileTimeUploaded(file, req.params.id));
+                });
+                res.json({ filesTimeUpload: filesTimeUploaded, filesList: files });
+            } else { res.json('אין קבצים שהועלו') }
+        });
+    })
+
 });
 
 

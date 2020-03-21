@@ -1,7 +1,8 @@
 const initState = {
     customerData: {},
     msg: 'hello tal',
-    fileIsExist:false
+    fileIsExist:false,
+    eventIsDone:false
 }
 
 const sitesReducer = (state = initState, action) => {
@@ -16,6 +17,11 @@ const sitesReducer = (state = initState, action) => {
 
         case "FILE_IS_EXIST":
             state = {...state,fileIsExist: action.payload}
+            console.log('siteReducer-FILE_IS_EXIST',state);
+            break;
+        
+        case "EVENT_IS_DONE":
+            state = {...state,eventIsDone: action.payload}
             console.log('siteReducer-FILE_IS_EXIST',state);
             break;
 

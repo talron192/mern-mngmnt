@@ -1,18 +1,24 @@
 import React, { Component, useState, useContext } from '../../node_modules/react';
 import { connect } from 'react-redux';
+import ContentEditable from 'react-contenteditable'
+import store from '../store.js';
+import { Collapse } from 'react-collapse';
+
 
 import { getCustomerData } from '../actions/customerActions';
 import { changeMsg } from '../actions/customerActions';
 import { fileIsExist } from '../actions/customerActions';
 
-
 import axios from '../../node_modules/axios';
 import { Datatable } from "../../node_modules/@o2xp/react-datatable";
 import { Link, Route, Switch } from '../../node_modules/react-router-dom';
 import Modal from '../../node_modules/react-modal';
+import ModalHeader from '../../node_modules/react-bootstrap/ModalHeader';
+
 import DocsUpload from "./docs-upload.component";
 import AppointmentModal from './AppointmentModal';
 import EventsHistoryModal from './EventsHistoryModal';
+import EditCustomerModal from './editCustomerModal';
 import ProductionReceipt from './ProductionReceipt';
 import PowerAttorney from './PowerAttorney';
 import ProcessStatus from './ProcessStatus';
@@ -34,6 +40,12 @@ const customStyles = {
     }
 };
 
+const editCustomerStyle = {
+    content: {
+        width: '68%',
+        right: '20%',
+    }
+};
 
 
 
@@ -101,6 +113,8 @@ $(document).on('click', '.btn_cancel', function (event) {
     });
 });
 //--->button > cancel > end
+
+
 class EditTodo extends Component {
     constructor(props) {
         super(props);
@@ -108,6 +122,7 @@ class EditTodo extends Component {
             obj: {},
             success: false,
             showListFiles: false,
+            showMoreContact: false,
             listOfFiles: [],
             _id: '',
             comments: '',
@@ -118,6 +133,7 @@ class EditTodo extends Component {
             PowerAttorneyIsOpen: false,
             processStatus: false,
             eventsHistory: false,
+            editCustomer: false,
             toEdit: false,
             accsessBtnSave: false,
             eventDate: '',
@@ -138,8 +154,23 @@ class EditTodo extends Component {
 
         this.openEventsHistory = this.openEventsHistory.bind(this);
         this.closeEventsHistory = this.closeEventsHistory.bind(this);
+        this.openEditCustomer = this.openEditCustomer.bind(this);
+        this.closeEditCustomer = this.closeEditCustomer.bind(this);
+
+        store.subscribe(() => {
+
+
+            console.log('store.subscribe', store.getState());
+            if (store.getState().customerData != null) {
+
+                this.setState({ editCustomer: store.getState().eventIsDone });
+            }
+
+        })
 
     }
+
+
 
     openModal() {
         this.setState({
@@ -190,6 +221,20 @@ class EditTodo extends Component {
             eventsHistory: false,
         });
     }
+    openEditCustomer() {
+        this.setState({
+            editCustomer: true
+        });
+    }
+    closeEditCustomer() {
+        this.props.get_Customer_Data(this.state.obj._id);
+        console.log(this.props.customerData);
+        this.setState({
+            editCustomer: false,
+            // obj:this.props.customerData
+        });
+    }
+
 
 
     closeModal() {
@@ -203,6 +248,16 @@ class EditTodo extends Component {
             this.setState({ showListFiles: false });
         }
     }
+
+    showMoreContact = () => {
+        if (this.state.showMoreContact === false) {
+            this.setState({ showMoreContact: true });
+            this.getListFiles();
+        } else {
+            this.setState({ showMoreContact: false });
+        }
+    }
+
     showComments = () => {
         if (this.state.showComments === false) {
 
@@ -238,6 +293,21 @@ class EditTodo extends Component {
             });
     }
 
+    deleteFile = (path) => {
+        console.log('deleteFile', path)
+        axios.post("http://localhost:4000/customers/deleteFile/" + this.props.match.params.id, { id: this.props.match.params.id, filePath: path })
+            .then(res => { // then print response status
+                console.log('res', res);
+                var filesList = this.mergeFilesListAndTimeUpload(res.data.filesList, res.data.filesTimeUpload);
+                this.setState({ listOfFiles: filesList });
+                console.log('this.state.listOfFiles', this.state.listOfFiles);
+
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
     getComments() {
         axios.get("http://localhost:4000/customers/getComments/" + this.props.match.params.id, { id: this.props.match.params.id })
             .then(res => { // then print response status
@@ -253,11 +323,14 @@ class EditTodo extends Component {
 
     mapFiles() {
         return this.state.listOfFiles.map((file, i) => {
+            let filePath = "../public/uploads/" + this.props.match.params.id + '/' + file.fileName;
+
             return (
                 <tr key={i}>
-                    <td><a key={i} download href={"/../../uploads/" + this.props.match.params.id + '/' + file.fileName}>{file.fileName} <br></br></a>
+                    <td><a key={i} target="_blank" href={"/../../uploads/" + this.props.match.params.id + '/' + file.fileName}>{file.fileName} <br></br></a>
                     </td>
                     <td>{file.uploadTime}</td>
+                    <td><i class="fa fa-trash-o" onClick={() => this.deleteFile(filePath)} title="מחיקת קובץ" style={{ cursor: 'pointer' }} aria-hidden="true"></i></td>
                 </tr>
             )
         });
@@ -275,6 +348,7 @@ class EditTodo extends Component {
                     <tr>
                         <th>שם קובץ</th>
                         <th> תאריך העלאת קובץ</th>
+                        <th>פעולות</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -593,6 +667,42 @@ class EditTodo extends Component {
     }
 
     componentWillMount() {
+        console.log(this.state.obj);
+    }
+
+    objIsEmpty(obj) {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    }
+
+
+    UNSAFE_componentWillUpdate(nextProps, nextState) {
+        console.log('props', this.props.customerData);
+        console.log('nextState', nextState);
+        console.log('nextProps', nextProps);
+        console.log('nextProps.customerData', nextProps.customerData);
+
+        if (nextState.obj._id == nextProps.customerData._id &&  !this.objIsEmpty(nextProps.customerData)) {
+            nextState.obj = nextProps.customerData;
+
+            console.log('if');
+        } else {
+            console.log('else');
+
+        }
+
+
+
+
+
+        // this.setState({
+        //     obj:this.props.customerData
+        // })
+
+
     }
 
     componentDidMount() {
@@ -634,12 +744,14 @@ class EditTodo extends Component {
                             <div className="col-md-12">
                                 <h3><b></b>כרטיס לקוח של : {this.state.obj.fullName}</h3>
                                 <span style={{ paddingLeft: '1em', color: '#f7b742', float: "left" }}> <Link to={"/docs/" + this.state.obj._id}>העלאת מסמכים  </Link><i className="fa fa-upload" aria-hidden="true"></i> </span>
+                                <span onClick={this.openEditCustomer} title="עריכת לקוח" style={{ cursor: 'pointer', paddingRight: '1em', color: '#f7b742', float: "right" }}> <i style={{ fontSize: '2em' }} className="fa fa-pencil-square-o fa-2" aria-hidden="true"></i> </span>
                             </div>
                         </div>
                         <hr></hr>
                         <div className="row">
                             <div className="col-md-3">
-                                <label>שם הלקוח: <b>{this.state.obj.fullName}</b></label>
+                                <label>שם הלקוח:
+                                     <b contenteditable>{this.state.obj.fullName}</b></label>
                             </div>
                             <div className="col-md-3">
                                 <label>תעודת זהות: <b>{this.state.obj._id}</b> </label>
@@ -756,6 +868,16 @@ class EditTodo extends Component {
                             <EventsHistoryModal eventsHistory={this.state.commentsArr} id={this.state.obj._id} />
                         </Modal>
 
+                        <Modal onRequestClose={this.closeEditCustomer}
+                            style={editCustomerStyle}
+                            isOpen={this.state.editCustomer} >
+                            <ModalHeader onClick={this.closeEditCustomer}  >
+                                <h4>עריכת לקוח</h4>
+                                <i style={{ cursor: 'pointer' }} className="fa fa-times" aria-hidden="true"></i>
+                            </ModalHeader>
+                            <EditCustomerModal customer={this.state.obj} id={this.state.obj._id} />
+                        </Modal>
+
                         <Modal onRequestClose={this.closeModal}
                             style={customStyles}
                             isOpen={this.state.modalIsOpen}
@@ -779,6 +901,28 @@ class EditTodo extends Component {
                         </Modal>
                         <br></br>
                         <hr></hr>
+                        {this.state.obj.anotherContact ?
+
+                            <div>
+                                <div className="row labelList" >
+                                    <div className="col-md-12" >
+                                        <label onClick={this.showMoreContact} style={{ float: "right", cursor: "pointer" }}> <b> הצגת איש קשר נוסף  <i class="fa fa-user" aria-hidden="true"></i> </b></label>
+                                    </div>
+                                </div>
+                                <hr></hr>
+
+                                <div className="row" style={this.state.showMoreContact == false ? { display: "none" } : { display: "flex" }}>
+                                    <div className="col-md-4">
+                                        <label> שם איש קשר נוסף: <b>{this.state.obj.anotherContact.otherContactFullName}</b> </label>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label>ת.ז איש קשר נוסף: <b>{this.state.obj.anotherContact.otherContactId}</b> </label>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label> תאריך לידה: <b>{this.state.obj.anotherContact.otherContactDate}</b> </label>
+                                    </div>
+                                </div>
+                            </div> : ''}
                         <div className="row labelList"  >
                             <div className="col-md-12" >
                                 <label onClick={this.showListFiles} style={{ float: "right", cursor: "pointer" }}> <b> הצגת קבצי לקוח  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
@@ -794,7 +938,7 @@ class EditTodo extends Component {
                         <hr></hr>
                         <div className="row ">
                             <div className="col-md-12" style={{ marginRight: '1em' }}>
-                                <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i className="fa fa-files-o" aria-hidden="true"></i> </b></label>
+                                <label onClick={this.showComments} style={{ float: "right", cursor: "pointer" }}> <b> הסטוריית אירועים  <i class="fa fa-calendar" aria-hidden="true"></i> </b></label>
                             </div>
 
                         </div>
@@ -828,18 +972,27 @@ class EditTodo extends Component {
             </Switch>
         )
     }
+
 }
 
 const mapStateToProps = state => {
+    console.log(state);
     return {
-        fileIsExist: state.sitesReducer.fileIsExist
+        fileIsExist: state.sitesReducer.fileIsExist,
+        customerData: state.sitesReducer.customerData
 
     }
 }
 
+
+
 const mapDispatchToProps = disaptch => {
     return {
-        file_IsExist: (fileData) => { disaptch(fileIsExist(fileData)); }
+        file_IsExist: (fileData) => { disaptch(fileIsExist(fileData)); },
+        get_Customer_Data: (id) => {
+            console.log(id);
+            disaptch(getCustomerData(id));
+        }
 
 
     }
