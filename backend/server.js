@@ -16,8 +16,8 @@ const schedule = require('node-schedule');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 // const url = 'mongodb+srv://talGlobalRon:4jqSIpibugSJp9AO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
-// const url = 'mongodb+srv://talGlobalRon:rXZL7HbEaAZw03tO@cluster0-dklnq.mongodb.net/customers?retryWrites=true&w=majority';
-var url = 'mongodb://127.0.0.1:27017/customers';
+const url ="mongodb+srv://talRon:talro1992@cluster0-qpd3p.mongodb.net/test?retryWrites=true&w=majority"
+// var url = 'mongodb://127.0.0.1:27017/customers';
 
 const port = process.env.MONGODB_URI || PORT;
 
@@ -105,7 +105,7 @@ Routes.route('/sendEmail/:id').post(function (req, res) {
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect(url, { useNewUrlParser: true });
+mongoose.connect(url, { useNewUrlParser: true , useUnifiedTopology: true });
 const connection = mongoose.connection;
 
 connection.once('open', function () {
