@@ -27,7 +27,7 @@
     "fs": "0.0.1-security",
     "fs-extra": "^8.1.0",
     "fs-readdir": "0.0.3",
-    "html-pdf": "^2.2.0",
+    "html-pdf": "^3.0.1",
     "jquery": "^3.4.1",
     "jquery-react": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
